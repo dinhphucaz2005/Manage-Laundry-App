@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.manage.laundry.data.model.request.*
 import com.example.manage.laundry.data.model.response.*
-import com.example.manage.laundry.data.repository.ShopOwnerRepository
+import com.example.manage.laundry.di.repository.ShopOwnerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

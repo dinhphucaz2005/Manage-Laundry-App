@@ -3,6 +3,7 @@ package com.example.manage.laundry.data.repository
 import com.example.manage.laundry.data.model.request.*
 import com.example.manage.laundry.data.model.response.*
 import com.example.manage.laundry.data.network.ApiService
+import com.example.manage.laundry.di.repository.StaffRepository
 
 class StaffRepositoryImpl(
     private val apiService: ApiService
@@ -20,13 +21,3 @@ class StaffRepositoryImpl(
         apiService.updateOrderStatus(orderId, request)
 }
 
-interface StaffRepository {
-    suspend fun login(request: StaffLoginRequest): ApiResponse<StaffLoginResponse>
-
-    suspend fun getOrders(): ApiResponse<List<OrderResponse>>
-
-    suspend fun updateOrderStatus(
-        orderId: Int,
-        request: UpdateOrderStatusRequest
-    ): ApiResponse<OrderResponse>
-}

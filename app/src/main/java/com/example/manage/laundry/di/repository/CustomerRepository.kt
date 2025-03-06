@@ -1,0 +1,16 @@
+package com.example.manage.laundry.di.repository
+
+import com.example.manage.laundry.data.model.request.*
+import com.example.manage.laundry.data.model.response.*
+
+interface CustomerRepository {
+    suspend fun register(request: CustomerRegisterRequest): ApiResponse<RegisterCustomerResponse>
+
+    suspend fun login(request: CustomerLoginRequest): ApiResponse<CustomerLoginResponse>
+
+    suspend fun searchShops(): ApiResponse<List<ShopSearchResponse>>
+
+    suspend fun getOrderHistory(): ApiResponse<List<OrderHistoryResponse>>
+
+    suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse>
+}

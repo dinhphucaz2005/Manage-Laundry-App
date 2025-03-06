@@ -3,12 +3,12 @@ package com.example.manage.laundry.di
 import android.app.Application
 import android.content.Context
 import com.example.manage.laundry.data.network.ApiService
-import com.example.manage.laundry.data.repository.CustomerRepository
 import com.example.manage.laundry.data.repository.CustomerRepositoryImpl
-import com.example.manage.laundry.data.repository.ShopOwnerRepository
 import com.example.manage.laundry.data.repository.ShopOwnerRepositoryImpl
-import com.example.manage.laundry.data.repository.StaffRepository
 import com.example.manage.laundry.data.repository.StaffRepositoryImpl
+import com.example.manage.laundry.di.repository.CustomerRepository
+import com.example.manage.laundry.di.repository.ShopOwnerRepository
+import com.example.manage.laundry.di.repository.StaffRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

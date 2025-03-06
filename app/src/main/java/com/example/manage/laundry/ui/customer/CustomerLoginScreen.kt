@@ -28,12 +28,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.manage.laundry.di.FakeModule
+import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import com.example.manage.laundry.viewmodel.CustomerViewModel
 
 @Composable
-fun CustomerLoginScreen(viewModel: CustomerViewModel) {
+fun CustomerLoginScreen(viewModel: CustomerViewModel = fakeViewModel()) {
     val state = viewModel.uiState
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -77,11 +77,10 @@ fun CustomerLoginScreen(viewModel: CustomerViewModel) {
                 text = "Đăng Nhập Khách Hàng",
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
             )
             Text(
                 text = "Đăng nhập để đặt dịch vụ giặt sấy",
-                fontSize = 14.sp,
+                fontSize = 18.sp,
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -100,6 +99,7 @@ fun CustomerLoginScreen(viewModel: CustomerViewModel) {
                     modifier = Modifier
                         .padding(24.dp)
                         .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // Email TextField
@@ -123,7 +123,6 @@ fun CustomerLoginScreen(viewModel: CustomerViewModel) {
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Password TextField
                     OutlinedTextField(
@@ -156,18 +155,15 @@ fun CustomerLoginScreen(viewModel: CustomerViewModel) {
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Liên kết Quên mật khẩu
                     TextButton(onClick = { /* TODO: Handle forgot password */ }) {
                         Text(
                             text = "Quên mật khẩu?",
-                            color = MaterialTheme.colorScheme.primary,
-                            fontSize = 14.sp
+                            fontSize = 18.sp
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Nút đăng nhập
                     Button(
@@ -178,7 +174,6 @@ fun CustomerLoginScreen(viewModel: CustomerViewModel) {
                             .shadow(4.dp, RoundedCornerShape(12.dp)),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = Color.White
                         )
                     ) {
@@ -197,25 +192,24 @@ fun CustomerLoginScreen(viewModel: CustomerViewModel) {
                 when {
                     state.isLoading -> {
                         CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(40.dp)
                         )
                     }
+
                     state.error != null -> {
                         Text(
                             text = "Lỗi: ${state.error}",
-                            color = MaterialTheme.colorScheme.error,
-                            fontSize = 14.sp,
+                            fontSize = 18.sp,
                             modifier = Modifier
                                 .background(Color(0xFFFFE0E0), RoundedCornerShape(8.dp))
                                 .padding(8.dp)
                         )
                     }
+
                     state.loginResponse != null -> {
                         Text(
                             text = "Chào mừng, ${state.loginResponse.name}!",
-                            color = MaterialTheme.colorScheme.primary,
-                            fontSize = 16.sp,
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .background(Color(0xFFE0F7FA), RoundedCornerShape(8.dp))
@@ -226,15 +220,18 @@ fun CustomerLoginScreen(viewModel: CustomerViewModel) {
             }
 
             // Nút chuyển sang đăng ký
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Chưa có tài khoản?", fontSize = 14.sp, color = Color.Gray)
+                Text("Chưa có tài khoản?", fontSize = 18.sp, color = Color.Gray)
                 TextButton(onClick = { /* TODO: Navigate to Register */ }) {
-                    Text("Đăng ký ngay", color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
+                    Text(
+                        "Đăng ký ngay",
+                        fontSize = 18.sp
+                    )
                 }
             }
         }
@@ -245,6 +242,6 @@ fun CustomerLoginScreen(viewModel: CustomerViewModel) {
 @Composable
 fun CustomerLoginScreenPreview() {
     ManageLaundryAppTheme {
-        CustomerLoginScreen(viewModel = FakeModule.provideFakeCustomerViewModel())
+        CustomerLoginScreen(viewModel = fakeViewModel<CustomerViewModel>())
     }
 }

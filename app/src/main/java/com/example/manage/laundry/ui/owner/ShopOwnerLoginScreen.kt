@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,28 +27,33 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.manage.laundry.di.FakeModule
+import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun ShopOwnerLoginScreen(viewModel: ShopOwnerViewModel) {
+fun ShopOwnerLoginScreen(
+    viewModel: ShopOwnerViewModel,
+    onLoginSuccess: () -> Unit = {}
+) {
     val state = viewModel.uiState
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
+    LaunchedEffect(state) {
+        if (state.loginResponse != null) {
+            delay(2000)
+            onLoginSuccess()
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        Color.White
-                    )
-                )
+                color = MaterialTheme.colorScheme.primaryContainer
             )
     ) {
         Column(
@@ -177,11 +181,7 @@ fun ShopOwnerLoginScreen(viewModel: ShopOwnerViewModel) {
                             .fillMaxWidth()
                             .height(50.dp)
                             .shadow(4.dp, RoundedCornerShape(12.dp)),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = Color.White
-                        )
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Đăng Nhập", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
@@ -198,20 +198,20 @@ fun ShopOwnerLoginScreen(viewModel: ShopOwnerViewModel) {
                 when {
                     state.isLoading -> {
                         CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(40.dp)
                         )
                     }
+
                     state.error != null -> {
                         Text(
                             text = "Lỗi: ${state.error}",
-                            color = MaterialTheme.colorScheme.error,
                             fontSize = 14.sp,
                             modifier = Modifier
                                 .background(Color(0xFFFFE0E0), RoundedCornerShape(8.dp))
                                 .padding(8.dp)
                         )
                     }
+
                     state.loginResponse != null -> {
                         Text(
                             text = "Chào mừng, ${state.loginResponse.name}!",
@@ -219,7 +219,7 @@ fun ShopOwnerLoginScreen(viewModel: ShopOwnerViewModel) {
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
-                                .background(Color(0xFFE0F7FA), RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .padding(8.dp)
                         )
                     }
@@ -235,7 +235,7 @@ fun ShopOwnerLoginScreen(viewModel: ShopOwnerViewModel) {
             ) {
                 Text("Chưa có tài khoản?", fontSize = 14.sp, color = Color.Gray)
                 TextButton(onClick = { /* TODO: Navigate to Register */ }) {
-                    Text("Đăng ký ngay", color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
+                    Text("Đăng ký ngay", fontSize = 14.sp)
                 }
             }
         }
@@ -246,6 +246,6 @@ fun ShopOwnerLoginScreen(viewModel: ShopOwnerViewModel) {
 @Composable
 fun ShopOwnerLoginScreenPreview() {
     ManageLaundryAppTheme {
-        ShopOwnerLoginScreen(viewModel = FakeModule.provideFakeShopOwnerViewModel())
+        ShopOwnerLoginScreen(viewModel = fakeViewModel<ShopOwnerViewModel>())
     }
 }

@@ -28,8 +28,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.manage.laundry.di.FakeModule
+import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import com.example.manage.laundry.viewmodel.StaffViewModel
 
@@ -82,9 +81,9 @@ fun StaffLoginScreen(viewModel: StaffViewModel) {
             )
             Text(
                 text = "Đăng nhập để quản lý cửa hàng của bạn",
-                fontSize = 14.sp,
+                fontSize = 18.sp,
                 color = Color.Gray,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -164,7 +163,7 @@ fun StaffLoginScreen(viewModel: StaffViewModel) {
                         Text(
                             text = "Quên mật khẩu?",
                             color = MaterialTheme.colorScheme.primary,
-                            fontSize = 14.sp
+                            fontSize = 18.sp
                         )
                     }
 
@@ -207,7 +206,7 @@ fun StaffLoginScreen(viewModel: StaffViewModel) {
                         Text(
                             text = "Lỗi: ${state.error}",
                             color = MaterialTheme.colorScheme.error,
-                            fontSize = 14.sp,
+                            fontSize = 18.sp,
                             modifier = Modifier
                                 .background(Color(0xFFFFE0E0), RoundedCornerShape(8.dp))
                                 .padding(8.dp)
@@ -235,12 +234,12 @@ fun StaffLoginScreen(viewModel: StaffViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Chưa có tài khoản?", fontSize = 14.sp, color = Color.Gray)
+                Text("Chưa có tài khoản?", fontSize = 18.sp, color = Color.Gray)
                 TextButton(onClick = { /* TODO: Navigate to Register */ }) {
                     Text(
                         "Đăng ký ngay",
                         color = MaterialTheme.colorScheme.primary,
-                        fontSize = 14.sp
+                        fontSize = 18.sp
                     )
                 }
             }
@@ -252,6 +251,6 @@ fun StaffLoginScreen(viewModel: StaffViewModel) {
 @Composable
 fun StaffLoginScreenPreview() {
     ManageLaundryAppTheme {
-        StaffLoginScreen(viewModel = FakeModule.provideFakeStaffViewModel())
+        StaffLoginScreen(viewModel = fakeViewModel())
     }
 }

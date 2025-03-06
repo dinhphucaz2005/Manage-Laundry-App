@@ -14,6 +14,7 @@ import com.example.manage.laundry.data.model.response.RegisterStaffResponse
 import com.example.manage.laundry.data.model.response.ShopOrderResponse
 import com.example.manage.laundry.data.model.response.ShopServiceResponse
 import com.example.manage.laundry.data.network.ApiService
+import com.example.manage.laundry.di.repository.ShopOwnerRepository
 
 
 class ShopOwnerRepositoryImpl(private val apiService: ApiService) : ShopOwnerRepository {
@@ -54,29 +55,3 @@ class ShopOwnerRepositoryImpl(private val apiService: ApiService) : ShopOwnerRep
         apiService.updateOrder(orderId, request)
 }
 
-interface ShopOwnerRepository {
-    suspend fun register(request: ShopRegisterRequest): ApiResponse<RegisterOwnerResponse>
-
-    suspend fun login(request: OwnerLoginRequest): ApiResponse<LoginResponse>
-
-    suspend fun addStaff(
-        shopId: Int,
-        request: StaffRegisterRequest
-    ): ApiResponse<RegisterStaffResponse>
-
-    suspend fun addService(
-        shopId: Int,
-        request: CreateServiceRequest
-    ): ApiResponse<ShopServiceResponse>
-
-    suspend fun updateService(
-        serviceId: Int,
-        request: UpdateServiceRequest
-    ): ApiResponse<ShopServiceResponse>
-
-    suspend fun deleteService(serviceId: Int): ApiResponse<Unit>
-
-    suspend fun getShopOrders(shopId: Int): ApiResponse<List<ShopOrderResponse>>
-
-    suspend fun updateOrder(orderId: Int, request: UpdateOrderRequest): ApiResponse<OrderResponse>
-}

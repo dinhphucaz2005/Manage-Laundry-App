@@ -4,10 +4,11 @@ import com.example.manage.laundry.data.model.request.CustomerLoginRequest
 import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
 import com.example.manage.laundry.data.model.response.*
 import com.example.manage.laundry.data.network.ApiService
+import com.example.manage.laundry.di.repository.CustomerRepository
 
 class CustomerRepositoryImpl(
     private val apiService: ApiService
-) : CustomerRepository{
+) : CustomerRepository {
     override suspend fun register(request: CustomerRegisterRequest): ApiResponse<RegisterCustomerResponse> =
         apiService.registerCustomer(request)
 
@@ -24,14 +25,3 @@ class CustomerRepositoryImpl(
         apiService.trackOrder(orderId)
 }
 
-interface CustomerRepository {
-    suspend fun register(request: CustomerRegisterRequest): ApiResponse<RegisterCustomerResponse>
-
-    suspend fun login(request: CustomerLoginRequest): ApiResponse<CustomerLoginResponse>
-
-    suspend fun searchShops(): ApiResponse<List<ShopSearchResponse>>
-
-    suspend fun getOrderHistory(): ApiResponse<List<OrderHistoryResponse>>
-
-    suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse>
-}
