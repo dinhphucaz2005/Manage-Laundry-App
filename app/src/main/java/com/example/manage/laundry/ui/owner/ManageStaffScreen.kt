@@ -76,7 +76,10 @@ fun ManageStaffScreen(viewModel: ShopOwnerViewModel) {
             onClick = {
 
                 coroutineScope.launch {
-                    localSnackbarHostState.showSnackbar("Đã thêm nhân viên!")
+                    localSnackbarHostState.showSnackbar(
+                        message = "Đã thêm nhân viên!",
+                        actionLabel = "OK"
+                    )
                 }
 
 
