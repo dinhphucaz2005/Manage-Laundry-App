@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.manage.laundry.auth.LoginViewModel
-import com.example.manage.laundry.ui.App
+import com.example.manage.laundry.navigation.LaundryAppNavigation
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -16,8 +14,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val loginViewModel = hiltViewModel<LoginViewModel>()
-            ManageLaundryAppTheme { App() }
+            ManageLaundryAppTheme {
+                LaundryAppNavigation()
+            }
         }
     }
 }

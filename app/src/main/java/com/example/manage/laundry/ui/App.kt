@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHost
 import com.example.manage.laundry.ui.component.colorButtons
 import com.example.manage.laundry.ui.component.color_buttons.ColorButton
 import com.example.manage.laundry.ui.component.dropletButtons
@@ -38,21 +39,7 @@ import com.exyte.animatednavbar.items.dropletbutton.DropletButton
 import com.exyte.animatednavbar.items.wigglebutton.WiggleButton
 
 @Composable
-fun App() {
-    Scaffold(
-        bottomBar = { ColorButtonNavBar() }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier.padding(paddingValues)
-        ) {
-
-        }
-    }
-}
-
-
-@Composable
-private fun ColorButtonNavBar() {
+fun ColorButtonNavBar() {
     var selectedItem by remember { mutableIntStateOf(0) }
     var prevSelectedIndex by remember { mutableIntStateOf(0) }
 
@@ -92,7 +79,7 @@ private fun ColorButtonNavBar() {
 }
 
 @Composable
-private fun DropletButtonNavBar() {
+fun DropletButtonNavBar() {
     var selectedItem by remember { mutableIntStateOf(0) }
     AnimatedNavigationBar(
         modifier = Modifier
@@ -124,7 +111,7 @@ private fun DropletButtonNavBar() {
 }
 
 @Composable
-private fun WiggleButtonNavBar(
+fun WiggleButtonNavBar(
     onItemClick: (Int) -> Unit
 ) {
     var selectedItem by remember { mutableIntStateOf(0) }
