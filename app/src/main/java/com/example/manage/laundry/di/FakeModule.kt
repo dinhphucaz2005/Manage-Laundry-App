@@ -1,8 +1,8 @@
 package com.example.manage.laundry.di
 
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import com.example.manage.laundry.data.model.request.CreateServiceRequest
@@ -87,7 +87,6 @@ private val customerRepository = object : CustomerRepository {
             )
         )
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getOrderHistory(): ApiResponse<List<OrderHistoryResponse>> =
         ApiResponse(
             data =
@@ -111,7 +110,6 @@ private val customerRepository = object : CustomerRepository {
             )
         )
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse> =
         ApiResponse(
             data =
@@ -179,7 +177,6 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
     override suspend fun deleteService(serviceId: Int): ApiResponse<Unit> =
         ApiResponse(data = null)
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getShopOrders(shopId: Int): ApiResponse<List<ShopOrderResponse>> =
         ApiResponse(
             data =
@@ -201,7 +198,6 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
             )
         )
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun updateOrder(
         orderId: Int,
         request: UpdateOrderRequest
@@ -224,7 +220,6 @@ private val staffRepository = object : StaffRepository {
     override suspend fun login(request: StaffLoginRequest): ApiResponse<StaffLoginResponse> =
         ApiResponse(data = StaffLoginResponse("fake_token", 2, 1, "Nguyễn Văn Staff"))
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getOrders(): ApiResponse<List<OrderResponse>> =
         ApiResponse(
             data =
@@ -250,7 +245,6 @@ private val staffRepository = object : StaffRepository {
             )
         )
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun updateOrderStatus(
         orderId: Int,
         request: UpdateOrderStatusRequest
@@ -269,10 +263,8 @@ private val staffRepository = object : StaffRepository {
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
-private fun String.Companion.now(): String {
-    return LocalDate.now().toString()
-}
+private fun String.Companion.now(): String =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) LocalDate.now().toString() else "2025-03-07"
 
 
 fun provideFakeCustomerViewModel() = CustomerViewModel(customerRepository)
@@ -281,12 +273,12 @@ fun provideFakeShopOwnerViewModel() = ShopOwnerViewModel(shopOwnerRepository)
 
 fun provideFakeStaffViewModel() = StaffViewModel(staffRepository)
 
+const val isAndroidTest = true
 
 @Composable
 inline fun <reified T : ViewModel> fakeViewModel(): T {
-//    val isDebug = LocalInspectionMode.current
-    val isDebug = true
-    return if (isDebug) {
+    val isDebug = LocalInspectionMode.current
+    return if (isDebug || isAndroidTest) {
         when (T::class) {
             CustomerViewModel::class -> provideFakeCustomerViewModel() as T
             ShopOwnerViewModel::class -> provideFakeShopOwnerViewModel() as T
