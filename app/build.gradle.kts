@@ -40,7 +40,24 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+
+    flavorDimensions += "environment"
+
+    productFlavors {
+        create("mock") {
+            dimension = "environment"
+            applicationIdSuffix = ".mock"
+            versionNameSuffix = "-mock"
+            buildConfigField("Boolean", "USE_FAKE_VIEWMODEL", "true")
+        }
+        create("prod") {
+            dimension = "environment"
+            buildConfigField("Boolean", "USE_FAKE_VIEWMODEL", "false")
+        }
+    }
+
 }
 
 dependencies {

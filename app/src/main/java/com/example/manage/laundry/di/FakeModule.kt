@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
+import com.example.manage.laundry.BuildConfig
 import com.example.manage.laundry.data.model.request.CreateServiceRequest
 import com.example.manage.laundry.data.model.request.CustomerLoginRequest
 import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
@@ -51,16 +52,25 @@ private val customerRepository = object : CustomerRepository {
             )
         )
 
-    override suspend fun login(request: CustomerLoginRequest): ApiResponse<CustomerLoginResponse> =
-        ApiResponse(
-            data =
-            CustomerLoginResponse(
-                "fake_token",
-                "Nguyễn Văn A",
-                request.email,
-                "0987654321"
+    override suspend fun login(request: CustomerLoginRequest): ApiResponse<CustomerLoginResponse> {
+        return if (request.email == "test@gmail.com" && request.password == "test") {
+            ApiResponse(
+                data = CustomerLoginResponse(
+                    "fake_token",
+                    "Nguyễn Văn A",
+                    request.email,
+                    "0987654321"
+                )
             )
-        )
+
+        } else {
+            ApiResponse(
+                success = false,
+                message = "Invalid email or password"
+            )
+        }
+
+    }
 
     override suspend fun searchShops(): ApiResponse<List<ShopSearchResponse>> =
         ApiResponse(
@@ -273,12 +283,11 @@ fun provideFakeShopOwnerViewModel() = ShopOwnerViewModel(shopOwnerRepository)
 
 fun provideFakeStaffViewModel() = StaffViewModel(staffRepository)
 
-const val isAndroidTest = true
 
 @Composable
 inline fun <reified T : ViewModel> fakeViewModel(): T {
-    val isDebug = LocalInspectionMode.current
-    return if (isDebug || isAndroidTest) {
+    val isPreview = LocalInspectionMode.current
+    return if (isPreview || BuildConfig.USE_FAKE_VIEWMODEL) {
         when (T::class) {
             CustomerViewModel::class -> provideFakeCustomerViewModel() as T
             ShopOwnerViewModel::class -> provideFakeShopOwnerViewModel() as T

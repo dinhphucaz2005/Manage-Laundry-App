@@ -23,7 +23,7 @@ fun LaundryAppNavigation(
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = LaundryAppScreen.ShopOwnerHome.route,
+        startDestination = LaundryAppScreen.Splash.route,
         modifier = modifier
 
     ) {
