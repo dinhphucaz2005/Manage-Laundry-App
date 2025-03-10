@@ -35,7 +35,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun ShopOwnerLoginScreen(
     viewModel: ShopOwnerViewModel,
-    onLoginSuccess: () -> Unit = {}
+    onLoginSuccess: () -> Unit = {},
+    onNavigateToRegister: () -> Unit = {}
 ) {
     val state = viewModel.uiState
     var email by remember { mutableStateOf("") }
@@ -234,7 +235,7 @@ fun ShopOwnerLoginScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Chưa có tài khoản?", fontSize = 14.sp, color = Color.Gray)
-                TextButton(onClick = { /* TODO: Navigate to Register */ }) {
+                TextButton(onClick = onNavigateToRegister) {
                     Text("Đăng ký ngay", fontSize = 14.sp)
                 }
             }

@@ -6,9 +6,11 @@ import com.example.manage.laundry.data.network.ApiService
 import com.example.manage.laundry.data.repository.CustomerRepositoryImpl
 import com.example.manage.laundry.data.repository.ShopOwnerRepositoryImpl
 import com.example.manage.laundry.data.repository.StaffRepositoryImpl
+import com.example.manage.laundry.data.repository.TestRepositoryImpl
 import com.example.manage.laundry.di.repository.CustomerRepository
 import com.example.manage.laundry.di.repository.ShopOwnerRepository
 import com.example.manage.laundry.di.repository.StaffRepository
+import com.example.manage.laundry.di.repository.TestRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,4 +44,10 @@ object AppModule {
     fun provideStaffRepository(
         apiService: ApiService
     ): StaffRepository = StaffRepositoryImpl(apiService)
+
+    @Provides
+    @Singleton
+    fun provideTestRepository(
+        apiService: ApiService
+    ): TestRepository = TestRepositoryImpl(apiService)
 }

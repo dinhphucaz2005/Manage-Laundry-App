@@ -9,12 +9,15 @@ import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.customer.CustomerLoginScreen
 import com.example.manage.laundry.ui.owner.ShopOwnerLoginScreen
 import com.example.manage.laundry.ui.owner.ShopOwnerHomeScreen
+import com.example.manage.laundry.ui.owner.ShopOwnerRegisterScreen
 import com.example.manage.laundry.ui.screens.LoginSelectionScreen
 import com.example.manage.laundry.ui.screens.SplashScreen
+import com.example.manage.laundry.ui.screens.TestScreen
 import com.example.manage.laundry.ui.staff.StaffLoginScreen
 import com.example.manage.laundry.viewmodel.CustomerViewModel
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import com.example.manage.laundry.viewmodel.StaffViewModel
+import com.example.manage.laundry.viewmodel.TestViewModel
 
 @Composable
 fun LaundryAppNavigation(
@@ -25,8 +28,12 @@ fun LaundryAppNavigation(
         navController = navController,
         startDestination = LaundryAppScreen.Splash.route,
         modifier = modifier
-
     ) {
+
+        composable(LaundryAppScreen.Test.route) {
+            TestScreen(viewModel = fakeViewModel<TestViewModel>())
+        }
+
 
         composable(LaundryAppScreen.LoginSelection.route) {
             LoginSelectionScreen(
@@ -54,16 +61,24 @@ fun LaundryAppNavigation(
                     navController.navigate(LaundryAppScreen.ShopOwnerHome.route) {
                         popUpTo(LaundryAppScreen.ShopOwnerLogin.route) { inclusive = true }
                     }
+                },
+                onNavigateToRegister = {
+                    navController.navigate(LaundryAppScreen.ShopOwnerRegister.route)
                 }
             )
         }
 
-        composable(LaundryAppScreen.StaffLogin.route) {
-            StaffLoginScreen(viewModel = fakeViewModel<StaffViewModel>())
-        }
-
         composable(LaundryAppScreen.ShopOwnerHome.route) {
             ShopOwnerHomeScreen(viewModel = fakeViewModel<ShopOwnerViewModel>())
+        }
+
+
+        composable(LaundryAppScreen.ShopOwnerRegister.route) {
+            ShopOwnerRegisterScreen(viewModel = fakeViewModel<ShopOwnerViewModel>())
+        }
+
+        composable(LaundryAppScreen.StaffLogin.route) {
+            StaffLoginScreen(viewModel = fakeViewModel<StaffViewModel>())
         }
 
         composable(LaundryAppScreen.CustomerHome.route) {
@@ -73,6 +88,7 @@ fun LaundryAppNavigation(
         composable(LaundryAppScreen.StaffHome.route) {
             TODO("Staff Home Screen")
         }
+
     }
 
 }

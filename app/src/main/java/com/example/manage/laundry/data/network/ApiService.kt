@@ -8,6 +8,8 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 
 class ApiService(private val client: HttpClient, private val baseUrl: String) {
+
+    suspend fun test(): ApiResponse<String> = client.get("$baseUrl/hello").body()
     // Shop Owner Endpoints (8)
     suspend fun registerOwner(request: ShopRegisterRequest): ApiResponse<RegisterOwnerResponse> =
         client.post("$baseUrl/owners/register") {
