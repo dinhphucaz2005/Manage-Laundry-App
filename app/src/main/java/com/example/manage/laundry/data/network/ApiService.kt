@@ -29,7 +29,7 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
             setBody(request)
         }.body()
 
-    suspend fun addService(shopId: Int, request: CreateServiceRequest): ApiResponse<ShopServiceResponse> =
+    suspend fun addService(shopId: Int, request: CreateServiceRequest): ApiResponse<List<ShopServiceResponse>> =
         client.post("$baseUrl/owners/shops/$shopId/services") {
             contentType(ContentType.Application.Json)
             setBody(request)

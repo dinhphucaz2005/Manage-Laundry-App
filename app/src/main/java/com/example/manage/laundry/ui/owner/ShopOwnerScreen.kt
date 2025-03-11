@@ -52,7 +52,7 @@ enum class ShopOwnerTab(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShopOwnerHomeScreen(viewModel: ShopOwnerViewModel) {
+fun ShopOwnerHomeScreen(viewModel: ShopOwnerViewModel = fakeViewModel<ShopOwnerViewModel>()) {
     val horizontalPageState = rememberPagerState(pageCount = { ShopOwnerTab.entries.size })
 
 
@@ -169,7 +169,8 @@ fun ShopOwnerHomeScreen(viewModel: ShopOwnerViewModel) {
                     0 -> ManageStaffScreen(viewModel)
                     1 -> ManageServiceScreen(viewModel)
                     2 -> ManageOrderScreen(viewModel)
-                    else -> throw IllegalStateException("Not implemented")
+                    3 -> ManageStatisticsScreen()
+                    4 -> ManageAccountScreen(viewModel)
                 }
             }
         }
@@ -179,7 +180,5 @@ fun ShopOwnerHomeScreen(viewModel: ShopOwnerViewModel) {
 @Preview
 @Composable
 private fun ShopOwnerScaffoldPreview() {
-    ManageLaundryAppTheme {
-        ShopOwnerHomeScreen(fakeViewModel<ShopOwnerViewModel>())
-    }
+    ManageLaundryAppTheme { ShopOwnerHomeScreen() }
 }

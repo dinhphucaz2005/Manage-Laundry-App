@@ -33,7 +33,7 @@ class ShopOwnerRepositoryImpl(private val apiService: ApiService) : ShopOwnerRep
     override suspend fun addService(
         shopId: Int,
         request: CreateServiceRequest
-    ): ApiResponse<ShopServiceResponse> =
+    ): ApiResponse<List<ShopServiceResponse>> =
         apiService.addService(shopId, request)
 
     override suspend fun updateService(

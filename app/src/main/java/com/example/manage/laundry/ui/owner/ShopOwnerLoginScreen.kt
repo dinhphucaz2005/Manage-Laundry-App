@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.manage.laundry.BuildConfig
 import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
@@ -39,8 +40,8 @@ fun ShopOwnerLoginScreen(
     onNavigateToRegister: () -> Unit = {}
 ) {
     val state = viewModel.uiState
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf(BuildConfig.DUMMY_SHOP_OWNER_EMAIL) }
+    var password by remember { mutableStateOf(BuildConfig.DUMMY_SHOP_OWNER_PASSWORD) }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(state) {

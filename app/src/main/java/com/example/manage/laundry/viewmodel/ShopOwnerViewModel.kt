@@ -85,7 +85,7 @@ class ShopOwnerViewModel @Inject constructor(
                     repository.addStaff(shopId, StaffRegisterRequest(name, email, password, phone))
                 uiState = if (response.success) {
                     uiState.copy(
-                        staffList = uiState.staffList + (response.data?.staff ?: return@launch),
+                        staffList = response.data?.staffs ?: emptyList(),
                         isLoading = false
                     )
                 } else {
@@ -105,7 +105,7 @@ class ShopOwnerViewModel @Inject constructor(
                     repository.addService(shopId, CreateServiceRequest(name, description, price))
                 if (response.success) {
                     uiState.copy(
-                        services = uiState.services + (response.data ?: return@launch),
+                        services = response.data ?: emptyList(),
                         isLoading = false
                     )
                 } else {

@@ -27,7 +27,7 @@ interface ShopOwnerRepository {
     suspend fun addService(
         shopId: Int,
         request: CreateServiceRequest
-    ): ApiResponse<ShopServiceResponse>
+    ): ApiResponse<List<ShopServiceResponse>>
 
     suspend fun updateService(
         serviceId: Int,

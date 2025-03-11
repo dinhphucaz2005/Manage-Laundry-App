@@ -139,6 +139,10 @@ private val customerRepository = object : CustomerRepository {
 }
 
 private val shopOwnerRepository = object : ShopOwnerRepository {
+
+    private val users: MutableList<UserResponse> = mutableListOf()
+    private val shopServices: MutableList<ShopServiceResponse> = mutableListOf()
+
     override suspend fun register(request: ShopRegisterRequest): ApiResponse<RegisterOwnerResponse> =
         ApiResponse(
             data =
@@ -160,23 +164,40 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
     override suspend fun addStaff(
         shopId: Int,
         request: StaffRegisterRequest
-    ): ApiResponse<RegisterStaffResponse> =
-        ApiResponse(
+    ): ApiResponse<RegisterStaffResponse> {
+        users.add(UserResponse(2, request.name, request.email, request.phone, "STAFF"))
+        return ApiResponse(
             data =
             RegisterStaffResponse(
-                UserResponse(2, request.name, request.email, request.phone, "STAFF"),
-                ShopResponse(shopId, "Tiệm Giặt ABC", "123 Lý Thường Kiệt", "08:00", "21:00")
+                shop = ShopResponse(
+                    shopId,
+                    "Tiệm Giặt ABC",
+                    "123 Lý Thường Kiệt",
+                    "08:00",
+                    "21:00"
+                ),
+                staffs = users
             )
         )
+
+    }
 
     override suspend fun addService(
         shopId: Int,
         request: CreateServiceRequest
-    ): ApiResponse<ShopServiceResponse> =
-        ApiResponse(
-            data =
-            ShopServiceResponse(1, request.name, request.description, request.price, shopId)
+    ): ApiResponse<List<ShopServiceResponse>> {
+        shopServices.add(
+            ShopServiceResponse(
+                1,
+                request.name,
+                request.description,
+                request.price,
+                shopId
+            )
         )
+        return ApiResponse(data = shopServices)
+    }
+
 
     override suspend fun updateService(
         serviceId: Int,

@@ -23,12 +23,39 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Shop Owner
+            buildConfigField("String", "DUMMY_SHOP_OWNER_EMAIL", "\"nguyenvana@example.com\"")
+            buildConfigField("String", "DUMMY_SHOP_OWNER_PASSWORD", "\"Matkhau123\"")
+
+            // Staff
+            buildConfigField("String", "DUMMY_STAFF_EMAIL", "\"staff@example.com\"")
+            buildConfigField("String", "DUMMY_STAFF_PASSWORD", "\"password123\"")
+
+            // Customer
+            buildConfigField("String", "DUMMY_CUSTOMER_EMAIL", "\"customer@example.com\"")
+            buildConfigField("String", "DUMMY_CUSTOMER_PASSWORD", "\"123456\"")
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            // Shop Owner
+            buildConfigField("String", "DUMMY_SHOP_OWNER_EMAIL", "\"\"")
+            buildConfigField("String", "DUMMY_SHOP_OWNER_PASSWORD", "\"\"")
+
+            // Staff
+            buildConfigField("String", "DUMMY_STAFF_EMAIL", "\"\"")
+            buildConfigField("String", "DUMMY_STAFF_PASSWORD", "\"\"")
+
+            // Customer
+            buildConfigField("String", "DUMMY_CUSTOMER_EMAIL", "\"\"")
+            buildConfigField("String", "DUMMY_CUSTOMER_PASSWORD", "\"\"")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -57,7 +84,6 @@ android {
             buildConfigField("Boolean", "USE_FAKE_VIEWMODEL", "false")
         }
     }
-
 }
 
 dependencies {
@@ -94,4 +120,7 @@ dependencies {
 
     // Bottom Navigation
     implementation(libs.animated.navigation.bar)
+
+    //Chart
+    implementation(libs.compose.charts)
 }

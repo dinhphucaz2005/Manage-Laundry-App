@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RegisterStaffResponse(
-    val staff: UserResponse,
+    val staffs: List<UserResponse>,
     val shop: ShopResponse
 )
 

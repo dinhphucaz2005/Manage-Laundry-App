@@ -68,9 +68,7 @@ fun LaundryAppNavigation(
             )
         }
 
-        composable(LaundryAppScreen.ShopOwnerHome.route) {
-            ShopOwnerHomeScreen(viewModel = fakeViewModel<ShopOwnerViewModel>())
-        }
+        composable(LaundryAppScreen.ShopOwnerHome.route) { ShopOwnerHomeScreen() }
 
 
         composable(LaundryAppScreen.ShopOwnerRegister.route) {
