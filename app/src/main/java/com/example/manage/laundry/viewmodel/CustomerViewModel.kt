@@ -1,14 +1,13 @@
 package com.example.manage.laundry.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.manage.laundry.data.model.request.*
 import com.example.manage.laundry.data.model.response.*
 import com.example.manage.laundry.di.repository.CustomerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,111 +15,138 @@ import javax.inject.Inject
 class CustomerViewModel @Inject constructor(
     private val repository: CustomerRepository
 ) : ViewModel() {
-    var uiState by mutableStateOf(CustomerUiState())
-        private set
+
+    private val _loginState = MutableStateFlow<CustomerState.Login>(CustomerState.Login.Idle)
+    val loginState: StateFlow<CustomerState.Login> = _loginState
+
+    private val _registerState = MutableStateFlow<CustomerState.Register>(CustomerState.Register.Idle)
+    val registerState: StateFlow<CustomerState.Register> = _registerState
+
+    private val _shopSearchState = MutableStateFlow<CustomerState.ShopSearch>(CustomerState.ShopSearch.Idle)
+    val shopSearchState: StateFlow<CustomerState.ShopSearch> = _shopSearchState
+
+    private val _orderHistoryState = MutableStateFlow<CustomerState.OrderHistory>(CustomerState.OrderHistory.Idle)
+    val orderHistoryState: StateFlow<CustomerState.OrderHistory> = _orderHistoryState
+
+    private val _trackOrderState = MutableStateFlow<CustomerState.TrackOrder>(CustomerState.TrackOrder.Idle)
+    val trackOrderState: StateFlow<CustomerState.TrackOrder> = _trackOrderState
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
+            _loginState.value = CustomerState.Login.Loading
+            try {
                 val response = repository.login(CustomerLoginRequest(email, password))
-                if (response.success) {
-                    uiState.copy(
-                        loginResponse = response.data,
-                        isLoading = false
-                    )
+                _loginState.value = if (response.success && response.data != null) {
+                    CustomerState.Login.Success(response.data)
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    CustomerState.Login.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _loginState.value = CustomerState.Login.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
 
     fun register(name: String, email: String, password: String, phone: String) {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
+            _registerState.value = CustomerState.Register.Loading
+            try {
                 val response = repository.register(CustomerRegisterRequest(name, email, password, phone))
-                if (response.success) {
-                    uiState.copy(
-                        registerResponse = response.data,
-                        isLoading = false
-                    )
+                _registerState.value = if (response.success && response.data != null) {
+                    CustomerState.Register.Success(response.data)
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    CustomerState.Register.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _registerState.value = CustomerState.Register.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
 
     fun searchShops() {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
+            _shopSearchState.value = CustomerState.ShopSearch.Loading
+            try {
                 val response = repository.searchShops()
-                if (response.success) {
-                    uiState.copy(
-                        shopList = response.data ?: emptyList(),
-                        isLoading = false
-                    )
+                _shopSearchState.value = if (response.success) {
+                    CustomerState.ShopSearch.Success(response.data ?: emptyList())
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    CustomerState.ShopSearch.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _shopSearchState.value = CustomerState.ShopSearch.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
 
     fun getOrderHistory() {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
+            _orderHistoryState.value = CustomerState.OrderHistory.Loading
+            try {
                 val response = repository.getOrderHistory()
-                if (response.success) {
-                    uiState.copy(
-                        orderHistory = response.data ?: emptyList(),
-                        isLoading = false
-                    )
+                _orderHistoryState.value = if (response.success) {
+                    CustomerState.OrderHistory.Success(response.data ?: emptyList())
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    CustomerState.OrderHistory.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _orderHistoryState.value = CustomerState.OrderHistory.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
 
     fun trackOrder(orderId: Int) {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
+            _trackOrderState.value = CustomerState.TrackOrder.Loading
+            try {
                 val response = repository.trackOrder(orderId)
-                if (response.success) {
-                    uiState.copy(
-                        trackedOrder = response.data,
-                        isLoading = false
-                    )
+                _trackOrderState.value = if (response.success && response.data != null) {
+                    CustomerState.TrackOrder.Success(response.data)
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    CustomerState.TrackOrder.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _trackOrderState.value = CustomerState.TrackOrder.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
 }
 
-data class CustomerUiState(
-    val loginResponse: CustomerLoginResponse? = null,
-    val registerResponse: RegisterCustomerResponse? = null,
-    val shopList: List<ShopSearchResponse> = emptyList(),
-    val orderHistory: List<OrderHistoryResponse> = emptyList(),
-    val trackedOrder: TrackOrderResponse? = null,
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
+sealed class CustomerState {
+    object Idle : CustomerState()
+
+    sealed class Login : CustomerState() {
+        object Idle : Login()
+        object Loading : Login()
+        data class Success(val response: CustomerLoginResponse) : Login()
+        data class Error(val message: String) : Login()
+    }
+
+    sealed class Register : CustomerState() {
+        object Idle : Register()
+        object Loading : Register()
+        data class Success(val response: RegisterCustomerResponse) : Register()
+        data class Error(val message: String) : Register()
+    }
+
+    sealed class ShopSearch : CustomerState() {
+        object Idle : ShopSearch()
+        object Loading : ShopSearch()
+        data class Success(val shops: List<ShopSearchResponse>) : ShopSearch()
+        data class Error(val message: String) : ShopSearch()
+    }
+
+    sealed class OrderHistory : CustomerState() {
+        object Idle : OrderHistory()
+        object Loading : OrderHistory()
+        data class Success(val orders: List<OrderHistoryResponse>) : OrderHistory()
+        data class Error(val message: String) : OrderHistory()
+    }
+
+    sealed class TrackOrder : CustomerState() {
+        object Idle : TrackOrder()
+        object Loading : TrackOrder()
+        data class Success(val order: TrackOrderResponse) : TrackOrder()
+        data class Error(val message: String) : TrackOrder()
+    }
+}

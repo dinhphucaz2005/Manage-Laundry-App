@@ -6,7 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.manage.laundry.di.fakeViewModel
+import com.example.manage.laundry.ui.customer.CustomerHomeScreen
 import com.example.manage.laundry.ui.customer.CustomerLoginScreen
+import com.example.manage.laundry.ui.customer.CustomerRegisterScreen
 import com.example.manage.laundry.ui.owner.ShopOwnerLoginScreen
 import com.example.manage.laundry.ui.owner.ShopOwnerHomeScreen
 import com.example.manage.laundry.ui.owner.ShopOwnerRegisterScreen
@@ -55,11 +57,29 @@ fun LaundryAppNavigation(
         }
 
         composable(LaundryAppScreen.CustomerLogin.route) {
-            CustomerLoginScreen(viewModel = customerViewModel)
+            CustomerLoginScreen(
+                viewModel = customerViewModel,
+                onLoginSuccess = {
+                    navController.navigate(LaundryAppScreen.CustomerHome.route) {
+                        popUpTo(LaundryAppScreen.CustomerLogin.route) { inclusive = true }
+                    }
+                },
+                onRegisterRequest = {
+                    navController.navigate(LaundryAppScreen.CustomerRegister.route)
+                }
+            )
+        }
+
+        composable(LaundryAppScreen.CustomerRegister.route) {
+            CustomerRegisterScreen(
+                viewModel = customerViewModel,
+                onLoginRequest = navController::popBackStack
+            )
         }
 
         composable(LaundryAppScreen.ShopOwnerLogin.route) {
-            ShopOwnerLoginScreen(viewModel = shopOwnerViewModel,
+            ShopOwnerLoginScreen(
+                viewModel = shopOwnerViewModel,
                 onLoginSuccess = {
                     navController.navigate(LaundryAppScreen.ShopOwnerHome.route) {
                         popUpTo(LaundryAppScreen.ShopOwnerLogin.route) { inclusive = true }
@@ -82,9 +102,7 @@ fun LaundryAppNavigation(
             StaffLoginScreen(viewModel = staffViewModel)
         }
 
-        composable(LaundryAppScreen.CustomerHome.route) {
-            TODO("Customer Home Screen")
-        }
+        composable(LaundryAppScreen.CustomerHome.route) { CustomerHomeScreen(customerViewModel) }
 
         composable(LaundryAppScreen.StaffHome.route) {
             TODO("Staff Home Screen")
