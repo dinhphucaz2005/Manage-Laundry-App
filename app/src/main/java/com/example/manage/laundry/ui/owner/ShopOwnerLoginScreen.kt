@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.example.manage.laundry.BuildConfig
 import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
+import com.example.manage.laundry.viewmodel.LoginState
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import kotlinx.coroutines.delay
 
@@ -39,13 +40,13 @@ fun ShopOwnerLoginScreen(
     onLoginSuccess: () -> Unit = {},
     onNavigateToRegister: () -> Unit = {}
 ) {
-    val state = viewModel.uiState
+    val loginState by viewModel.loginState.collectAsState()
     var email by remember { mutableStateOf(BuildConfig.DUMMY_SHOP_OWNER_EMAIL) }
     var password by remember { mutableStateOf(BuildConfig.DUMMY_SHOP_OWNER_PASSWORD) }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(state) {
-        if (state.loginResponse != null) {
+    LaunchedEffect(loginState) {
+        if (loginState is LoginState.Success) {
             delay(2000)
             onLoginSuccess()
         }
@@ -192,31 +193,35 @@ fun ShopOwnerLoginScreen(
 
             // Trạng thái loading, lỗi, hoặc thành công
             Spacer(modifier = Modifier.height(24.dp))
+
             AnimatedVisibility(
-                visible = state.isLoading || state.error != null || state.loginResponse != null,
+                visible = loginState is LoginState.Loading ||
+                        loginState is LoginState.Error ||
+                        loginState is LoginState.Success,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                when {
-                    state.isLoading -> {
+                when (loginState) {
+                    is LoginState.Loading -> {
                         CircularProgressIndicator(
                             modifier = Modifier.size(40.dp)
                         )
                     }
 
-                    state.error != null -> {
+                    is LoginState.Error -> {
                         Text(
-                            text = "Lỗi: ${state.error}",
+                            text = "Lỗi: ${(loginState as LoginState.Error).message}",
                             fontSize = 14.sp,
+                            color = Color.Red,
                             modifier = Modifier
                                 .background(Color(0xFFFFE0E0), RoundedCornerShape(8.dp))
                                 .padding(8.dp)
                         )
                     }
 
-                    state.loginResponse != null -> {
+                    is LoginState.Success -> {
                         Text(
-                            text = "Chào mừng, ${state.loginResponse.name}!",
+                            text = "Chào mừng, ${(loginState as LoginState.Success).data?.name}!",
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
@@ -225,6 +230,8 @@ fun ShopOwnerLoginScreen(
                                 .padding(8.dp)
                         )
                     }
+
+                    LoginState.Idle -> {} // Không hiển thị gì khi ở trạng thái mặc định
                 }
             }
 

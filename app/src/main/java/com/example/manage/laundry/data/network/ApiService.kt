@@ -10,6 +10,7 @@ import io.ktor.http.*
 class ApiService(private val client: HttpClient, private val baseUrl: String) {
 
     suspend fun test(): ApiResponse<String> = client.get("$baseUrl/hello").body()
+
     // Shop Owner Endpoints (8)
     suspend fun registerOwner(request: ShopRegisterRequest): ApiResponse<RegisterOwnerResponse> =
         client.post("$baseUrl/owners/register") {
@@ -23,19 +24,31 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
             setBody(request)
         }.body()
 
-    suspend fun addStaff(shopId: Int, request: StaffRegisterRequest): ApiResponse<RegisterStaffResponse> =
+    suspend fun getStaffs(shopId: Int): ApiResponse<GetStaffsResponse> =
+        client.get("$baseUrl/owners/shops/$shopId/staffs").body()
+
+    suspend fun addStaff(
+        shopId: Int,
+        request: StaffRegisterRequest
+    ): ApiResponse<RegisterStaffResponse> =
         client.post("$baseUrl/owners/shops/$shopId/staffs") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
 
-    suspend fun addService(shopId: Int, request: CreateServiceRequest): ApiResponse<List<ShopServiceResponse>> =
+    suspend fun addService(
+        shopId: Int,
+        request: CreateServiceRequest
+    ): ApiResponse<List<ShopServiceResponse>> =
         client.post("$baseUrl/owners/shops/$shopId/services") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
 
-    suspend fun updateService(serviceId: Int, request: UpdateServiceRequest): ApiResponse<ShopServiceResponse> =
+    suspend fun updateService(
+        serviceId: Int,
+        request: UpdateServiceRequest
+    ): ApiResponse<ShopServiceResponse> =
         client.put("$baseUrl/owners/services/$serviceId") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -65,7 +78,10 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
     suspend fun getStaffOrders(): ApiResponse<List<OrderResponse>> =
         client.get("$baseUrl/staff/orders").body()
 
-    suspend fun updateOrderStatus(orderId: Int, request: UpdateOrderStatusRequest): ApiResponse<OrderResponse> =
+    suspend fun updateOrderStatus(
+        orderId: Int,
+        request: UpdateOrderStatusRequest
+    ): ApiResponse<OrderResponse> =
         client.put("$baseUrl/staff/orders/$orderId/status") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -92,4 +108,7 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
 
     suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse> =
         client.get("$baseUrl/customers/orders/$orderId/track").body()
+
+    suspend fun getServices(shopId: Int): ApiResponse<List<ShopServiceResponse>> =
+        client.get("$baseUrl/owners/shops/$shopId/services").body()
 }

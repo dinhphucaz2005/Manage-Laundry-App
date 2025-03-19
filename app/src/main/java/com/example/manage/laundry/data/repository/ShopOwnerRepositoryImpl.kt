@@ -7,6 +7,7 @@ import com.example.manage.laundry.data.model.request.StaffRegisterRequest
 import com.example.manage.laundry.data.model.request.UpdateOrderRequest
 import com.example.manage.laundry.data.model.request.UpdateServiceRequest
 import com.example.manage.laundry.data.model.response.ApiResponse
+import com.example.manage.laundry.data.model.response.GetStaffsResponse
 import com.example.manage.laundry.data.model.response.LoginResponse
 import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.data.model.response.RegisterOwnerResponse
@@ -23,6 +24,9 @@ class ShopOwnerRepositoryImpl(private val apiService: ApiService) : ShopOwnerRep
 
     override suspend fun login(request: OwnerLoginRequest): ApiResponse<LoginResponse> =
         apiService.loginOwner(request)
+
+    override suspend fun getStaffs(shopId: Int): ApiResponse<GetStaffsResponse> =
+        apiService.getStaffs(shopId)
 
     override suspend fun addStaff(
         shopId: Int,
@@ -53,5 +57,8 @@ class ShopOwnerRepositoryImpl(private val apiService: ApiService) : ShopOwnerRep
         request: UpdateOrderRequest
     ): ApiResponse<OrderResponse> =
         apiService.updateOrder(orderId, request)
+
+    override suspend fun getServices(shopId: Int): ApiResponse<List<ShopServiceResponse>> =
+        apiService.getServices(shopId)
 }
 

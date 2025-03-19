@@ -19,6 +19,7 @@ import com.example.manage.laundry.data.model.request.UpdateOrderStatusRequest
 import com.example.manage.laundry.data.model.request.UpdateServiceRequest
 import com.example.manage.laundry.data.model.response.ApiResponse
 import com.example.manage.laundry.data.model.response.CustomerLoginResponse
+import com.example.manage.laundry.data.model.response.GetStaffsResponse
 import com.example.manage.laundry.data.model.response.LoginResponse
 import com.example.manage.laundry.data.model.response.OrderHistoryResponse
 import com.example.manage.laundry.data.model.response.OrderResponse
@@ -78,63 +79,63 @@ private val customerRepository = object : CustomerRepository {
     override suspend fun searchShops(): ApiResponse<List<ShopSearchResponse>> =
         ApiResponse(
             data =
-            listOf(
-                ShopSearchResponse(
-                    1,
-                    "Tiệm Giặt ABC",
-                    "123 Lý Thường Kiệt",
-                    "Giặt sấy nhanh",
-                    "08:00",
-                    "21:00",
-                    4.5
-                ),
-                ShopSearchResponse(
-                    2,
-                    "Tiệm Giặt XYZ",
-                    "456 Nguyễn Trãi",
-                    "Giặt ủi cao cấp",
-                    "07:00",
-                    "22:00",
-                    4.0
+                listOf(
+                    ShopSearchResponse(
+                        1,
+                        "Tiệm Giặt ABC",
+                        "123 Lý Thường Kiệt",
+                        "Giặt sấy nhanh",
+                        "08:00",
+                        "21:00",
+                        4.5
+                    ),
+                    ShopSearchResponse(
+                        2,
+                        "Tiệm Giặt XYZ",
+                        "456 Nguyễn Trãi",
+                        "Giặt ủi cao cấp",
+                        "07:00",
+                        "22:00",
+                        4.0
+                    )
                 )
-            )
         )
 
     override suspend fun getOrderHistory(): ApiResponse<List<OrderHistoryResponse>> =
         ApiResponse(
             data =
-            listOf(
-                OrderHistoryResponse(
-                    1,
-                    "Tiệm Giặt ABC",
-                    50000,
-                    "COMPLETED",
-                    String.now(),
-                    String.now()
-                ),
-                OrderHistoryResponse(
-                    2,
-                    "Tiệm Giặt XYZ",
-                    70000,
-                    "PENDING",
-                    String.now(),
-                    String.now()
+                listOf(
+                    OrderHistoryResponse(
+                        1,
+                        "Tiệm Giặt ABC",
+                        50000,
+                        "COMPLETED",
+                        String.now(),
+                        String.now()
+                    ),
+                    OrderHistoryResponse(
+                        2,
+                        "Tiệm Giặt XYZ",
+                        70000,
+                        "PENDING",
+                        String.now(),
+                        String.now()
+                    )
                 )
-            )
         )
 
     override suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse> =
         ApiResponse(
             data =
-            TrackOrderResponse(
-                orderId,
-                "Tiệm Giặt ABC",
-                Order.Status.COMPLETED,
-                50000,
-                "Giao trước 6h",
-                String.now(),
-                String.now()
-            )
+                TrackOrderResponse(
+                    orderId,
+                    "Tiệm Giặt ABC",
+                    Order.Status.COMPLETED,
+                    50000,
+                    "Giao trước 6h",
+                    String.now(),
+                    String.now()
+                )
         )
 }
 
@@ -146,20 +147,55 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
     override suspend fun register(request: ShopRegisterRequest): ApiResponse<RegisterOwnerResponse> =
         ApiResponse(
             data =
-            RegisterOwnerResponse(
-                UserResponse(1, request.ownerName, request.email, request.phone, "OWNER"),
-                ShopResponse(
+                RegisterOwnerResponse(
+                    UserResponse(1, request.ownerName, request.email, request.phone, "OWNER"),
+                    ShopResponse(
+                        1,
+                        request.shopName,
+                        request.address,
+                        request.openTime,
+                        request.closeTime
+                    )
+                )
+        )
+
+    override suspend fun login(request: OwnerLoginRequest): ApiResponse<LoginResponse> =
+        ApiResponse(
+            data = LoginResponse(
+                "fake_token", 1, "Nguyễn Văn Owner", request.email,
+                shop = ShopResponse(
                     1,
-                    request.shopName,
-                    request.address,
-                    request.openTime,
-                    request.closeTime
+                    "Tiệm Giặt ABC",
+                    "123 Lý Thường Kiệt",
+                    "08:00",
+                    "21:00"
                 )
             )
         )
 
-    override suspend fun login(request: OwnerLoginRequest): ApiResponse<LoginResponse> =
-        ApiResponse(data = LoginResponse("fake_token", 1, "Nguyễn Văn Owner", request.email))
+    override suspend fun getStaffs(shopId: Int): ApiResponse<GetStaffsResponse> {
+        return ApiResponse(
+            data = GetStaffsResponse(
+                staffs = listOf(
+                    UserResponse(
+                        2,
+                        "Nguyễn Văn Staff",
+                        "nguyenvanstaff@gmail.com",
+                        "0987654321",
+                        "STAFF"
+                    ),
+                    UserResponse(
+                        3,
+                        "Trần Thị Staff",
+                        "tranthistaff@gmail.com",
+                        "0987654321",
+                        "STAFF"
+                    ),
+                    UserResponse(4, "Lê Văn Staff", "lenvanstaff@gmail.com", "0987654321", "STAFF")
+                )
+            )
+        )
+    }
 
     override suspend fun addStaff(
         shopId: Int,
@@ -168,16 +204,16 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
         users.add(UserResponse(2, request.name, request.email, request.phone, "STAFF"))
         return ApiResponse(
             data =
-            RegisterStaffResponse(
-                shop = ShopResponse(
-                    shopId,
-                    "Tiệm Giặt ABC",
-                    "123 Lý Thường Kiệt",
-                    "08:00",
-                    "21:00"
-                ),
-                staffs = users
-            )
+                RegisterStaffResponse(
+                    shop = ShopResponse(
+                        shopId,
+                        "Tiệm Giặt ABC",
+                        "123 Lý Thường Kiệt",
+                        "08:00",
+                        "21:00"
+                    ),
+                    staffs = users
+                )
         )
 
     }
@@ -191,7 +227,7 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
                 1,
                 request.name,
                 request.description,
-                request.price,
+                request.price.toDouble(),
                 shopId
             )
         )
@@ -205,7 +241,7 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
     ): ApiResponse<ShopServiceResponse> =
         ApiResponse(
             data =
-            ShopServiceResponse(serviceId, request.name, request.description, request.price, 1)
+                ShopServiceResponse(serviceId, request.name, request.description, request.price.toDouble(), 1)
         )
 
     override suspend fun deleteService(serviceId: Int): ApiResponse<Unit> =
@@ -214,22 +250,22 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
     override suspend fun getShopOrders(shopId: Int): ApiResponse<List<ShopOrderResponse>> =
         ApiResponse(
             data =
-            listOf(
-                ShopOrderResponse(
-                    1,
-                    "Nguyễn Văn A",
-                    50000,
-                    Order.Status.PENDING,
-                    String.now()
-                ),
-                ShopOrderResponse(
-                    2,
-                    "Trần Thị B",
-                    70000,
-                    Order.Status.CONFIRMED,
-                    String.now()
+                listOf(
+                    ShopOrderResponse(
+                        1,
+                        "Nguyễn Văn A",
+                        50000,
+                        Order.Status.PENDING,
+                        String.now()
+                    ),
+                    ShopOrderResponse(
+                        2,
+                        "Trần Thị B",
+                        70000,
+                        Order.Status.CONFIRMED,
+                        String.now()
+                    )
                 )
-            )
         )
 
     override suspend fun updateOrder(
@@ -238,16 +274,20 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
     ): ApiResponse<OrderResponse> =
         ApiResponse(
             data =
-            OrderResponse(
-                orderId,
-                "Tiệm Giặt ABC",
-                "Nguyễn Văn A",
-                50000,
-                request.status,
-                request.specialInstructions,
-                String.now()
-            )
+                OrderResponse(
+                    orderId,
+                    "Tiệm Giặt ABC",
+                    "Nguyễn Văn A",
+                    50000,
+                    request.status,
+                    request.specialInstructions,
+                    String.now()
+                )
         )
+
+    override suspend fun getServices(shopId: Int): ApiResponse<List<ShopServiceResponse>> {
+        TODO("Not yet implemented")
+    }
 }
 
 private val staffRepository = object : StaffRepository {
@@ -257,26 +297,26 @@ private val staffRepository = object : StaffRepository {
     override suspend fun getOrders(): ApiResponse<List<OrderResponse>> =
         ApiResponse(
             data =
-            listOf(
-                OrderResponse(
-                    1,
-                    "Tiệm Giặt ABC",
-                    "Nguyễn Văn A",
-                    50000,
-                    Order.Status.PENDING,
-                    null,
-                    String.now()
-                ),
-                OrderResponse(
-                    2,
-                    "Tiệm Giặt ABC",
-                    "Trần Thị B",
-                    70000,
-                    Order.Status.PROCESSING,
-                    "Gấp gáp",
-                    String.now()
+                listOf(
+                    OrderResponse(
+                        1,
+                        "Tiệm Giặt ABC",
+                        "Nguyễn Văn A",
+                        50000,
+                        Order.Status.PENDING,
+                        null,
+                        String.now()
+                    ),
+                    OrderResponse(
+                        2,
+                        "Tiệm Giặt ABC",
+                        "Trần Thị B",
+                        70000,
+                        Order.Status.PROCESSING,
+                        "Gấp gáp",
+                        String.now()
+                    )
                 )
-            )
         )
 
     override suspend fun updateOrderStatus(

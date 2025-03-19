@@ -52,7 +52,7 @@ enum class ShopOwnerTab(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShopOwnerHomeScreen(viewModel: ShopOwnerViewModel = fakeViewModel<ShopOwnerViewModel>()) {
+fun ShopOwnerHomeScreen(viewModel: ShopOwnerViewModel) {
     val horizontalPageState = rememberPagerState(pageCount = { ShopOwnerTab.entries.size })
 
 
@@ -180,5 +180,5 @@ fun ShopOwnerHomeScreen(viewModel: ShopOwnerViewModel = fakeViewModel<ShopOwnerV
 @Preview
 @Composable
 private fun ShopOwnerScaffoldPreview() {
-    ManageLaundryAppTheme { ShopOwnerHomeScreen() }
+    ManageLaundryAppTheme { ShopOwnerHomeScreen(fakeViewModel()) }
 }

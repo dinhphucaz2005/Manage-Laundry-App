@@ -28,31 +28,31 @@ fun ManageOrderScreen(viewModel: ShopOwnerViewModel) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        items(viewModel.uiState.shopOrders) { order ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("Đơn #${order.orderId} - ${order.customerName}")
-                        Text("${order.totalPrice} VND - ${order.status}")
-                    }
-                    IconButton(onClick = {
-                        viewModel.updateOrder(
-                            order.orderId,
-                            Order.Status.CONFIRMED,
-                            "Giao trước 6h"
-                        )
-                    }) {
-                        Icon(Icons.Default.Edit, contentDescription = "Cập nhật")
-                    }
-                }
-            }
-        }
+//        items(viewModel.uiState.shopOrders) { order ->
+//            Card(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(vertical = 4.dp)
+//            ) {
+//                Row(
+//                    modifier = Modifier.padding(16.dp),
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Column(modifier = Modifier.weight(1f)) {
+//                        Text("Đơn #${order.orderId} - ${order.customerName}")
+//                        Text("${order.totalPrice} VND - ${order.status}")
+//                    }
+//                    IconButton(onClick = {
+//                        viewModel.updateOrder(
+//                            order.orderId,
+//                            Order.Status.CONFIRMED,
+//                            "Giao trước 6h"
+//                        )
+//                    }) {
+//                        Icon(Icons.Default.Edit, contentDescription = "Cập nhật")
+//                    }
+//                }
+//            }
+//        }
     }
 }

@@ -21,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,8 +35,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.manage.laundry.data.model.request.ShopRegisterRequest
 import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
+import com.example.manage.laundry.viewmodel.RegisterState
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import kotlinx.coroutines.delay
 
@@ -44,7 +47,8 @@ fun ShopOwnerRegisterScreen(
     viewModel: ShopOwnerViewModel,
     onRegisterSuccess: () -> Unit = {}
 ) {
-    val state = viewModel.uiState
+    val registerState by viewModel.registerState.collectAsState()
+
     var ownerName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -55,8 +59,9 @@ fun ShopOwnerRegisterScreen(
     var closeTime by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(state) {
-        if (state.registerResponse != null) {
+    // Chờ 2 giây sau khi đăng ký thành công rồi chuyển trang
+    LaunchedEffect(registerState) {
+        if (registerState is RegisterState.Success) {
             delay(2000)
             onRegisterSuccess()
         }
@@ -150,24 +155,46 @@ fun ShopOwnerRegisterScreen(
             Button(
                 onClick = {
                     viewModel.register(
-                        ownerName,
-                        email,
-                        password,
-                        phone,
-                        shopName,
-                        address,
-                        openTime,
-                        closeTime
+                        ShopRegisterRequest(
+                            ownerName,
+                            email,
+                            password,
+                            phone,
+                            shopName,
+                            address,
+                            openTime,
+                            closeTime
+                        )
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = registerState !is RegisterState.Loading // Không cho click khi đang load
             ) {
                 Text("Đăng Ký")
             }
 
-            if (state.isLoading) CircularProgressIndicator()
-            state.error?.let {
-                Text("Lỗi: $it", color = Color.Red)
+            when (registerState) {
+                is RegisterState.Loading -> {
+                    CircularProgressIndicator()
+                }
+
+                is RegisterState.Error -> {
+                    Text(
+                        text = "Lỗi: ${(registerState as RegisterState.Error).message}",
+                        color = Color.Red,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+
+                is RegisterState.Success -> {
+                    Text(
+                        text = "Đăng ký thành công! Chuyển hướng...",
+                        color = Color.Green,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                RegisterState.Idle -> {}
             }
         }
     }

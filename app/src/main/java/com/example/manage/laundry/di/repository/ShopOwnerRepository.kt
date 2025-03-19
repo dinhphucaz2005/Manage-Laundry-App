@@ -7,6 +7,7 @@ import com.example.manage.laundry.data.model.request.StaffRegisterRequest
 import com.example.manage.laundry.data.model.request.UpdateOrderRequest
 import com.example.manage.laundry.data.model.request.UpdateServiceRequest
 import com.example.manage.laundry.data.model.response.ApiResponse
+import com.example.manage.laundry.data.model.response.GetStaffsResponse
 import com.example.manage.laundry.data.model.response.LoginResponse
 import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.data.model.response.RegisterOwnerResponse
@@ -18,6 +19,8 @@ interface ShopOwnerRepository {
     suspend fun register(request: ShopRegisterRequest): ApiResponse<RegisterOwnerResponse>
 
     suspend fun login(request: OwnerLoginRequest): ApiResponse<LoginResponse>
+
+    suspend fun getStaffs(shopId: Int): ApiResponse<GetStaffsResponse>
 
     suspend fun addStaff(
         shopId: Int,
@@ -39,4 +42,6 @@ interface ShopOwnerRepository {
     suspend fun getShopOrders(shopId: Int): ApiResponse<List<ShopOrderResponse>>
 
     suspend fun updateOrder(orderId: Int, request: UpdateOrderRequest): ApiResponse<OrderResponse>
+
+    suspend fun getServices(shopId: Int): ApiResponse<List<ShopServiceResponse>>
 }

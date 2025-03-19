@@ -8,3 +8,8 @@ data class RegisterStaffResponse(
     val shop: ShopResponse
 )
 
+@Serializable
+data class GetStaffsResponse(
+    val staffs: List<UserResponse>
+)
+

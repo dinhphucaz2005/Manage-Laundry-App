@@ -1,14 +1,12 @@
 package com.example.manage.laundry.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.manage.laundry.data.model.request.*
 import com.example.manage.laundry.data.model.response.*
 import com.example.manage.laundry.di.repository.ShopOwnerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,207 +14,212 @@ import javax.inject.Inject
 class ShopOwnerViewModel @Inject constructor(
     private val repository: ShopOwnerRepository
 ) : ViewModel() {
-    var uiState by mutableStateOf(OwnerUiState())
-        private set
+
+    // 🟢 Trạng thái đăng nhập
+    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
+    val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
+            _loginState.value = LoginState.Loading
+            try {
                 val response = repository.login(OwnerLoginRequest(email, password))
                 if (response.success) {
-                    uiState.copy(
-                        loginResponse = response.data,
-                        isLoading = false
-                    )
+                    _loginState.value = LoginState.Success(response.data)
+                    // get staffs and services
+                    response.data?.shop?.id?.let {
+                        getStaffs()
+                        getServices()
+                    }
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    _loginState.value = LoginState.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _loginState.value = LoginState.Error(e.message ?: "Lỗi không xác định")
             }
+            _loginState.value
         }
     }
 
-    fun register(
-        ownerName: String,
-        email: String,
-        password: String,
-        phone: String,
-        shopName: String,
-        address: String,
-        openTime: String,
-        closeTime: String
-    ) {
-        viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
-                val response = repository.register(
-                    ShopRegisterRequest(
-                        ownerName,
-                        email,
-                        password,
-                        phone,
-                        shopName,
-                        address,
-                        openTime,
-                        closeTime
-                    )
-                )
-                if (response.success) {
-                    uiState.copy(
-                        registerResponse = response.data,
-                        isLoading = false
-                    )
-                } else {
-                    uiState.copy(error = response.message, isLoading = false)
-                }
-            } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
-            }
-        }
-    }
+    // 🟢 Trạng thái đăng ký
+    private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
+    val registerState: StateFlow<RegisterState> = _registerState.asStateFlow()
 
-    fun addStaff(shopId: Int, name: String, email: String, password: String, phone: String) {
+    fun register(request: ShopRegisterRequest) {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
+            _registerState.value = RegisterState.Loading
             try {
-                val response =
-                    repository.addStaff(shopId, StaffRegisterRequest(name, email, password, phone))
-                uiState = if (response.success) {
-                    uiState.copy(
-                        staffList = response.data?.staffs ?: emptyList(),
-                        isLoading = false
-                    )
+                val response = repository.register(request)
+                if (response.success) {
+                    _registerState.value = RegisterState.Success(response.data)
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    _registerState.value = RegisterState.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState = uiState.copy(error = e.message, isLoading = false)
+                _registerState.value = RegisterState.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
 
-    fun addService(shopId: Int, name: String, description: String, price: Int) {
+    // 🟢 Trạng thái nhân viên
+    private val _staffState = MutableStateFlow<StaffState>(StaffState.Idle)
+    val staffState: StateFlow<StaffState> = _staffState.asStateFlow()
+
+    fun getStaffs() {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
-                val response =
-                    repository.addService(shopId, CreateServiceRequest(name, description, price))
+            _staffState.value = StaffState.Loading
+            try {
+                val shopId = loginState.value.getShopId() ?: return@launch
+                val response = repository.getStaffs(shopId)
                 if (response.success) {
-                    uiState.copy(
-                        services = response.data ?: emptyList(),
-                        isLoading = false
-                    )
+                    _staffState.value = StaffState.Success(response.data?.staffs ?: emptyList())
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    _staffState.value = StaffState.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _staffState.value = StaffState.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
 
-    fun updateService(serviceId: Int, name: String, description: String, price: Int) {
+    fun addStaff(request: StaffRegisterRequest) {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
-                val response = repository.updateService(
-                    serviceId,
-                    UpdateServiceRequest(name, description, price)
-                )
+            _staffState.value = StaffState.Loading
+            try {
+                val shopId = loginState.value.getShopId() ?: return@launch
+                val response = repository.addStaff(shopId, request)
                 if (response.success) {
-                    uiState.copy(
-                        services = uiState.services.map {
-                            if (it.id == serviceId) response.data ?: it else it
-                        },
-                        isLoading = false
-                    )
+                    _staffState.value = StaffState.Added
+                    _staffState.value = StaffState.Success(response.data?.staffs ?: emptyList())
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    _staffState.value = StaffState.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _staffState.value = StaffState.Error(e.message ?: "Lỗi không xác định")
+            }
+        }
+    }
+
+    // 🟢 Trạng thái dịch vụ
+    private val _serviceState = MutableStateFlow<ServiceState>(ServiceState.Idle)
+    val serviceState: StateFlow<ServiceState> = _serviceState.asStateFlow()
+
+    fun getServices() {
+        viewModelScope.launch {
+            _serviceState.value = ServiceState.Loading
+            try {
+                val shopId = loginState.value.getShopId() ?: return@launch
+                val response = repository.getServices(shopId)
+                if (response.success) {
+                    _serviceState.value = ServiceState.Success(response.data ?: emptyList())
+                } else {
+                    _serviceState.value = ServiceState.Error(response.message)
+                }
+            } catch (e: Exception) {
+                _serviceState.value = ServiceState.Error(e.message ?: "Lỗi không xác định")
+            }
+        }
+    }
+
+    fun addService(shopId: Int, request: CreateServiceRequest) {
+        viewModelScope.launch {
+            _serviceState.value = ServiceState.Loading
+            try {
+                val response = repository.addService(shopId, request)
+                if (response.success) {
+                    _serviceState.value = ServiceState.Added
+                    _serviceState.value = ServiceState.Success(response.data ?: emptyList())
+                } else {
+                    _serviceState.value = ServiceState.Error(response.message)
+                }
+            } catch (e: Exception) {
+                _serviceState.value = ServiceState.Error(e.message ?: "Lỗi không xác định")
+            }
+        }
+    }
+
+    fun updateService(serviceId: Int, request: UpdateServiceRequest) {
+        viewModelScope.launch {
+            _serviceState.value = ServiceState.Loading
+            try {
+                val response = repository.updateService(serviceId, request)
+                if (response.success) {
+                    _serviceState.value = ServiceState.Success(
+                        _serviceState.value.let { current ->
+                            if (current is ServiceState.Success) {
+                                current.services.map {
+                                    if (it.id == serviceId) response.data ?: it else it
+                                }
+                            } else emptyList()
+                        }
+                    )
+                } else {
+                    _serviceState.value = ServiceState.Error(response.message)
+                }
+            } catch (e: Exception) {
+                _serviceState.value = ServiceState.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
 
     fun deleteService(serviceId: Int) {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
+            _serviceState.value = ServiceState.Loading
+            try {
                 val response = repository.deleteService(serviceId)
                 if (response.success) {
-                    uiState.copy(
-                        services = uiState.services.filter { it.id != serviceId },
-                        isLoading = false
+                    _serviceState.value = ServiceState.Success(
+                        _serviceState.value.let { current ->
+                            if (current is ServiceState.Success) {
+                                current.services.filter { it.id != serviceId }
+                            } else emptyList()
+                        }
                     )
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    _serviceState.value = ServiceState.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
-            }
-        }
-    }
-
-    fun getShopOrders(shopId: Int) {
-        viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
-                val response = repository.getShopOrders(shopId)
-                if (response.success) {
-                    uiState.copy(
-                        shopOrders = response.data ?: emptyList(),
-                        isLoading = false
-                    )
-                } else {
-                    uiState.copy(error = response.message, isLoading = false)
-                }
-            } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
-            }
-        }
-    }
-
-    fun updateOrder(orderId: Int, status: Order.Status, specialInstructions: String?) {
-        viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
-                val response =
-                    repository.updateOrder(orderId, UpdateOrderRequest(status, specialInstructions))
-                if (response.success) {
-                    uiState.copy(
-                        shopOrders = uiState.shopOrders.map {
-                            if (it.orderId == orderId) response.data?.let {it1 ->
-                                ShopOrderResponse(
-                                    it1.id,
-                                    it1.customerName,
-                                    it1.totalPrice,
-                                    it1.status,
-                                    it1.createdAt
-                                )
-                            }
-                                ?: it else it
-                        },
-                        isLoading = false
-                    )
-                } else {
-                    uiState.copy(error = response.message, isLoading = false)
-                }
-            } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _serviceState.value = ServiceState.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
 }
 
-data class OwnerUiState(
-    val loginResponse: LoginResponse? = null,
-    val registerResponse: RegisterOwnerResponse? = null,
-    val staffList: List<UserResponse> = emptyList(),
-    val services: List<ShopServiceResponse> = emptyList(),
-    val shopOrders: List<ShopOrderResponse> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
+// 🟢 Trạng thái cho từng chức năng
+
+sealed class LoginState {
+    fun getShopId(): Int? {
+        return when (this) {
+            is Success -> this.data?.shop?.id
+            else -> null
+        }
+    }
+
+    object Idle : LoginState()
+    object Loading : LoginState()
+    data class Success(val data: LoginResponse?) : LoginState()
+    data class Error(val message: String) : LoginState()
+}
+
+sealed class RegisterState {
+    object Idle : RegisterState()
+    object Loading : RegisterState()
+    data class Success(val data: RegisterOwnerResponse?) : RegisterState()
+    data class Error(val message: String) : RegisterState()
+}
+
+sealed class StaffState {
+    object Idle : StaffState()
+    object Loading : StaffState()
+    object Added : StaffState()
+    data class Success(val staffs: List<UserResponse>) : StaffState()
+    data class Error(val message: String) : StaffState()
+}
+
+sealed class ServiceState {
+    object Idle : ServiceState()
+    object Loading : ServiceState()
+    object Added : ServiceState()
+    data class Success(val services: List<ShopServiceResponse>) : ServiceState()
+    data class Error(val message: String) : ServiceState()
+}

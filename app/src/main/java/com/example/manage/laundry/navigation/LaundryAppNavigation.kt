@@ -24,6 +24,9 @@ fun LaundryAppNavigation(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
+    val shopOwnerViewModel = fakeViewModel<ShopOwnerViewModel>()
+    val customerViewModel = fakeViewModel<CustomerViewModel>()
+    val staffViewModel = fakeViewModel<StaffViewModel>()
     NavHost(
         navController = navController,
         startDestination = LaundryAppScreen.Splash.route,
@@ -52,11 +55,11 @@ fun LaundryAppNavigation(
         }
 
         composable(LaundryAppScreen.CustomerLogin.route) {
-            CustomerLoginScreen(viewModel = fakeViewModel<CustomerViewModel>())
+            CustomerLoginScreen(viewModel = customerViewModel)
         }
 
         composable(LaundryAppScreen.ShopOwnerLogin.route) {
-            ShopOwnerLoginScreen(viewModel = fakeViewModel<ShopOwnerViewModel>(),
+            ShopOwnerLoginScreen(viewModel = shopOwnerViewModel,
                 onLoginSuccess = {
                     navController.navigate(LaundryAppScreen.ShopOwnerHome.route) {
                         popUpTo(LaundryAppScreen.ShopOwnerLogin.route) { inclusive = true }
@@ -68,15 +71,15 @@ fun LaundryAppNavigation(
             )
         }
 
-        composable(LaundryAppScreen.ShopOwnerHome.route) { ShopOwnerHomeScreen() }
+        composable(LaundryAppScreen.ShopOwnerHome.route) { ShopOwnerHomeScreen(shopOwnerViewModel) }
 
 
         composable(LaundryAppScreen.ShopOwnerRegister.route) {
-            ShopOwnerRegisterScreen(viewModel = fakeViewModel<ShopOwnerViewModel>())
+            ShopOwnerRegisterScreen(shopOwnerViewModel)
         }
 
         composable(LaundryAppScreen.StaffLogin.route) {
-            StaffLoginScreen(viewModel = fakeViewModel<StaffViewModel>())
+            StaffLoginScreen(viewModel = staffViewModel)
         }
 
         composable(LaundryAppScreen.CustomerHome.route) {
