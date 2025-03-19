@@ -163,18 +163,16 @@ class ShopOwnerViewModel @Inject constructor(
     }
 
     fun deleteService(serviceId: Int) {
+        val services = if (_serviceState.value is ServiceState.Success) {
+            (_serviceState.value as ServiceState.Success).services
+        } else emptyList()
         viewModelScope.launch {
             _serviceState.value = ServiceState.Loading
             try {
                 val response = repository.deleteService(serviceId)
                 if (response.success) {
-                    _serviceState.value = ServiceState.Success(
-                        _serviceState.value.let { current ->
-                            if (current is ServiceState.Success) {
-                                current.services.filter { it.id != serviceId }
-                            } else emptyList()
-                        }
-                    )
+                    _serviceState.value =
+                        ServiceState.Success(services.filter { it.id != serviceId })
                 } else {
                     _serviceState.value = ServiceState.Error(response.message)
                 }
