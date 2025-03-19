@@ -1,5 +1,6 @@
 package com.example.manage.laundry.di
 
+import com.example.manage.laundry.BuildConfig
 import com.example.manage.laundry.data.network.ApiService
 import dagger.Module
 import dagger.Provides
@@ -15,23 +16,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val BASE_URL = "http://192.168.100.125:1705/api"
+    private const val BASE_URL = "http://${BuildConfig.IP_ADDRESS}:1705/api"
 
     @Provides
     @Singleton
-    fun provideHttpClient(
-//        @Named("authToken") token: String?
-    ): HttpClient = HttpClient(OkHttp) {
+    fun provideHttpClient(): HttpClient = HttpClient(OkHttp) {
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
-//        install(Auth) {
-//            bearer {
-//                loadTokens {
-//                    token?.let { BearerTokens(it, it) }
-//                }
-//            }
-//        }
     }
 
     @Provides

@@ -71,7 +71,7 @@ fun ShopOwnerRegisterScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -88,7 +88,6 @@ fun ShopOwnerRegisterScreen(
                 label = { Text("Tên Chủ Cửa Hàng") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = email,
@@ -96,7 +95,6 @@ fun ShopOwnerRegisterScreen(
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = password,
@@ -113,7 +111,6 @@ fun ShopOwnerRegisterScreen(
                     }
                 }
             )
-            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = phone,
@@ -121,7 +118,6 @@ fun ShopOwnerRegisterScreen(
                 label = { Text("Số điện thoại") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = shopName,
@@ -129,7 +125,6 @@ fun ShopOwnerRegisterScreen(
                 label = { Text("Tên Cửa Hàng") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = address,
@@ -137,7 +132,6 @@ fun ShopOwnerRegisterScreen(
                 label = { Text("Địa chỉ") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = openTime,
@@ -145,7 +139,6 @@ fun ShopOwnerRegisterScreen(
                 label = { Text("Giờ mở cửa") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = closeTime,
@@ -153,7 +146,6 @@ fun ShopOwnerRegisterScreen(
                 label = { Text("Giờ đóng cửa") },
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = {
@@ -173,10 +165,7 @@ fun ShopOwnerRegisterScreen(
                 Text("Đăng Ký")
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            if (state.isLoading) {
-                CircularProgressIndicator()
-            }
+            if (state.isLoading) CircularProgressIndicator()
             state.error?.let {
                 Text("Lỗi: $it", color = Color.Red)
             }

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -7,6 +9,22 @@ plugins {
     id("com.google.dagger.hilt.android")
 //    id("kotlin-kapt")
 }
+
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+val networkIp = localProperties.getProperty("NETWORK_IP", "192.168.100.125") ?: "192.168.100.125"
+
+val securityConfigFile = file("src/main/res/xml/network_security_config.xml")
+
+if (securityConfigFile.exists()) {
+    val updatedContent = securityConfigFile.readText().replace(
+        Regex("<domain includeSubdomains=\"true\">.*?</domain>"),
+        "<domain includeSubdomains=\"true\">$networkIp</domain>"
+    )
+    securityConfigFile.writeText(updatedContent)
+}
+
 
 android {
     namespace = "com.example.manage.laundry"
@@ -24,6 +42,7 @@ android {
 
     buildTypes {
         debug {
+            buildConfigField("String", "IP_ADDRESS", "\"$networkIp\"")
             // Shop Owner
             buildConfigField("String", "DUMMY_SHOP_OWNER_EMAIL", "\"nguyenvana@example.com\"")
             buildConfigField("String", "DUMMY_SHOP_OWNER_PASSWORD", "\"Matkhau123\"")
@@ -43,6 +62,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "IP_ADDRESS", "\"$networkIp\"")
 
             // Shop Owner
             buildConfigField("String", "DUMMY_SHOP_OWNER_EMAIL", "\"\"")
