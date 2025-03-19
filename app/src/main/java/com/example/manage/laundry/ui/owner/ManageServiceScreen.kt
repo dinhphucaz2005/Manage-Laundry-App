@@ -153,7 +153,9 @@ fun ServiceItem(service: ShopServiceResponse, onDelete: () -> Unit) {
             modifier = Modifier.padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(text = "Tên: ${service.name}", fontWeight = FontWeight.Bold)
                 Text(text = "Giá: ${service.price} VND", color = Color.Blue)
                 Text(text = "Mô tả: ${service.description}", fontSize = 12.sp)
