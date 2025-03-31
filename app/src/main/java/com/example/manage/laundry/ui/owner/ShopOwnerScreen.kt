@@ -20,14 +20,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -52,11 +50,14 @@ enum class ShopOwnerTab(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShopOwnerHomeScreen(viewModel: ShopOwnerViewModel) {
+fun ShopOwnerHomeScreen(
+    viewModel: ShopOwnerViewModel,
+    onLogout: () -> Unit
+) {
     val horizontalPageState = rememberPagerState(pageCount = { ShopOwnerTab.entries.size })
 
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = LocalSnackbarHostState.current
     val coroutineScope = rememberCoroutineScope()
 
     CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
@@ -97,6 +98,7 @@ fun ShopOwnerHomeScreen(viewModel: ShopOwnerViewModel) {
                     ),
                     actions = {
                         IconButton(onClick = {
+                            onLogout()
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar(
                                     message = "Đã đăng xuất",
@@ -180,5 +182,10 @@ fun ShopOwnerHomeScreen(viewModel: ShopOwnerViewModel) {
 @Preview
 @Composable
 private fun ShopOwnerScaffoldPreview() {
-    ManageLaundryAppTheme { ShopOwnerHomeScreen(fakeViewModel()) }
+    ManageLaundryAppTheme {
+        ShopOwnerHomeScreen(
+            viewModel = fakeViewModel(),
+            onLogout = { }
+        )
+    }
 }

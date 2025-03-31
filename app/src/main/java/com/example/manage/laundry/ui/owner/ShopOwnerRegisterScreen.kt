@@ -45,7 +45,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun ShopOwnerRegisterScreen(
     viewModel: ShopOwnerViewModel,
-    onRegisterSuccess: () -> Unit = {}
+    onRegisterSuccess: () -> Unit
 ) {
     val registerState by viewModel.registerState.collectAsState()
 
@@ -204,6 +204,9 @@ fun ShopOwnerRegisterScreen(
 @Composable
 fun ShopOwnerRegisterScreenPreview() {
     ManageLaundryAppTheme {
-        ShopOwnerRegisterScreen(viewModel = fakeViewModel<ShopOwnerViewModel>())
+        ShopOwnerRegisterScreen(
+            viewModel = fakeViewModel<ShopOwnerViewModel>(),
+            onRegisterSuccess = {}
+        )
     }
 }

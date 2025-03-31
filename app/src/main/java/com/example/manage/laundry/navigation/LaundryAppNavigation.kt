@@ -91,11 +91,21 @@ fun LaundryAppNavigation(
             )
         }
 
-        composable(LaundryAppScreen.ShopOwnerHome.route) { ShopOwnerHomeScreen(shopOwnerViewModel) }
-
+        composable(LaundryAppScreen.ShopOwnerHome.route) {
+            ShopOwnerHomeScreen(
+                viewModel = shopOwnerViewModel,
+                onLogout = {
+                    navController.popBackStack()
+                    shopOwnerViewModel.logout()
+                }
+            )
+        }
 
         composable(LaundryAppScreen.ShopOwnerRegister.route) {
-            ShopOwnerRegisterScreen(shopOwnerViewModel)
+            ShopOwnerRegisterScreen(
+                viewModel = shopOwnerViewModel,
+                onRegisterSuccess = navController::popBackStack
+            )
         }
 
         composable(LaundryAppScreen.StaffLogin.route) {

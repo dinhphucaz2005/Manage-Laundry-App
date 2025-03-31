@@ -181,6 +181,14 @@ class ShopOwnerViewModel @Inject constructor(
             }
         }
     }
+
+    fun logout() {
+        // Reset all state
+        _loginState.value = LoginState.Idle
+        _registerState.value = RegisterState.Idle
+        _staffState.value = StaffState.Idle
+        _serviceState.value = ServiceState.Idle
+    }
 }
 
 // 🟢 Trạng thái cho từng chức năng
