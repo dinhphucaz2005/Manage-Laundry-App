@@ -34,7 +34,7 @@ import com.example.manage.laundry.LocalSnackbarHostState
 import com.example.manage.laundry.data.model.request.StaffRegisterRequest
 import com.example.manage.laundry.data.model.response.UserResponse
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
-import com.example.manage.laundry.viewmodel.StaffState
+import com.example.manage.laundry.viewmodel.ShopOwnerViewModel.StaffState
 import kotlinx.coroutines.launch
 
 @Composable

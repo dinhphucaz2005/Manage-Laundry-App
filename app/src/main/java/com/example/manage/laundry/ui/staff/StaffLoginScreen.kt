@@ -19,37 +19,39 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.manage.laundry.BuildConfig
-import com.example.manage.laundry.di.fakeViewModel
-import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import com.example.manage.laundry.viewmodel.StaffViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun StaffLoginScreen(viewModel: StaffViewModel) {
-    val state = viewModel.uiState
+fun StaffLoginScreen(
+    viewModel: StaffViewModel,
+    onLoginSuccess: () -> Unit,
+) {
+    val loginState by viewModel.loginState.collectAsState()
     var email by remember { mutableStateOf(BuildConfig.DUMMY_STAFF_EMAIL) }
     var password by remember { mutableStateOf(BuildConfig.DUMMY_STAFF_PASSWORD) }
     var isPasswordVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(loginState) {
+        if (loginState is StaffViewModel.LoginState.Success) {
+            delay(2000)
+            onLoginSuccess()
+        }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        Color.White
-                    )
-                )
+                color = MaterialTheme.colorScheme.primaryContainer
             )
     ) {
         Column(
@@ -59,10 +61,10 @@ fun StaffLoginScreen(viewModel: StaffViewModel) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Logo hoặc Icon
+            // Logo or Icon
             Icon(
                 imageVector = Icons.Default.Person,
-                contentDescription = "Shop Owner Icon",
+                contentDescription = "Staff Icon",
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
@@ -82,14 +84,14 @@ fun StaffLoginScreen(viewModel: StaffViewModel) {
             )
             Text(
                 text = "Đăng nhập để quản lý cửa hàng của bạn",
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 color = Color.Gray,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Card chứa form đăng nhập
+            // Card containing login form
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -159,99 +161,87 @@ fun StaffLoginScreen(viewModel: StaffViewModel) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Liên kết Quên mật khẩu
+                    // Forgot password link
                     TextButton(onClick = { /* TODO: Handle forgot password */ }) {
                         Text(
                             text = "Quên mật khẩu?",
                             color = MaterialTheme.colorScheme.primary,
-                            fontSize = 18.sp
+                            fontSize = 14.sp
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Nút đăng nhập
+                    // Login button
                     Button(
                         onClick = { viewModel.login(email, password) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
                             .shadow(4.dp, RoundedCornerShape(12.dp)),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = Color.White
-                        )
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Đăng Nhập", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
 
-            // Trạng thái loading, lỗi, hoặc thành công
+            // Loading, error, or success state
             Spacer(modifier = Modifier.height(24.dp))
+
             AnimatedVisibility(
-                visible = state.isLoading || state.error != null || state.loginResponse != null,
+                visible = loginState is StaffViewModel.LoginState.Loading ||
+                        loginState is StaffViewModel.LoginState.Error ||
+                        loginState is StaffViewModel.LoginState.Success,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                when {
-                    state.isLoading -> {
+                when (loginState) {
+                    is StaffViewModel.LoginState.Loading -> {
                         CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(40.dp)
                         )
                     }
 
-                    state.error != null -> {
+                    is StaffViewModel.LoginState.Error -> {
                         Text(
-                            text = "Lỗi: ${state.error}",
-                            color = MaterialTheme.colorScheme.error,
-                            fontSize = 18.sp,
+                            text = "Lỗi: ${(loginState as StaffViewModel.LoginState.Error).message}",
+                            fontSize = 14.sp,
+                            color = Color.Red,
                             modifier = Modifier
                                 .background(Color(0xFFFFE0E0), RoundedCornerShape(8.dp))
                                 .padding(8.dp)
                         )
                     }
 
-                    state.loginResponse != null -> {
+                    is StaffViewModel.LoginState.Success -> {
                         Text(
-                            text = "Chào mừng, ${state.loginResponse.name}!",
+                            text = "Chào mừng, ${(loginState as StaffViewModel.LoginState.Success).data?.name}!",
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
-                                .background(Color(0xFFE0F7FA), RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .padding(8.dp)
                         )
                     }
+
+                    StaffViewModel.LoginState.Idle -> {} // Do not display anything in the default state
                 }
             }
 
-            // Nút chuyển sang đăng ký
+            // Navigate to register button
             Spacer(modifier = Modifier.height(16.dp))
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Chưa có tài khoản?", fontSize = 18.sp, color = Color.Gray)
+                Text("Chưa có tài khoản?", fontSize = 14.sp, color = Color.Gray)
                 TextButton(onClick = { /* TODO: Navigate to Register */ }) {
-                    Text(
-                        "Đăng ký ngay",
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 18.sp
-                    )
+                    Text("Đăng ký ngay", fontSize = 14.sp)
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun StaffLoginScreenPreview() {
-    ManageLaundryAppTheme {
-        StaffLoginScreen(viewModel = fakeViewModel())
     }
 }

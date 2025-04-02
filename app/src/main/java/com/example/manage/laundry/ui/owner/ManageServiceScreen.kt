@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.example.manage.laundry.LocalSnackbarHostState
 import com.example.manage.laundry.data.model.request.CreateServiceRequest
 import com.example.manage.laundry.data.model.response.ShopServiceResponse
-import com.example.manage.laundry.viewmodel.ServiceState
+import com.example.manage.laundry.viewmodel.ShopOwnerViewModel.*
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import kotlinx.coroutines.launch
 

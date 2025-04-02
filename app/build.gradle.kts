@@ -48,7 +48,7 @@ android {
             buildConfigField("String", "DUMMY_SHOP_OWNER_PASSWORD", "\"Matkhau123\"")
 
             // Staff
-            buildConfigField("String", "DUMMY_STAFF_EMAIL", "\"staff@example.com\"")
+            buildConfigField("String", "DUMMY_STAFF_EMAIL", "\"staff1@example.com\"")
             buildConfigField("String", "DUMMY_STAFF_PASSWORD", "\"password123\"")
 
             // Customer

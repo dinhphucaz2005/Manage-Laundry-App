@@ -109,7 +109,14 @@ fun LaundryAppNavigation(
         }
 
         composable(LaundryAppScreen.StaffLogin.route) {
-            StaffLoginScreen(viewModel = staffViewModel)
+            StaffLoginScreen(
+                viewModel = staffViewModel,
+                onLoginSuccess = {
+                    navController.navigate(LaundryAppScreen.StaffHome.route) {
+                        popUpTo(LaundryAppScreen.StaffLogin.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(LaundryAppScreen.CustomerHome.route) { CustomerHomeScreen(customerViewModel) }

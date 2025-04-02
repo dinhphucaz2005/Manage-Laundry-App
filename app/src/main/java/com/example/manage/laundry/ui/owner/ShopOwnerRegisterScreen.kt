@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.example.manage.laundry.data.model.request.ShopRegisterRequest
 import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
-import com.example.manage.laundry.viewmodel.RegisterState
+import com.example.manage.laundry.viewmodel.ShopOwnerViewModel.RegisterState
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import kotlinx.coroutines.delay
 

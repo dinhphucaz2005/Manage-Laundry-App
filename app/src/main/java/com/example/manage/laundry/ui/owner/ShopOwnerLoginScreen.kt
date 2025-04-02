@@ -30,15 +30,15 @@ import androidx.compose.ui.unit.sp
 import com.example.manage.laundry.BuildConfig
 import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
-import com.example.manage.laundry.viewmodel.LoginState
+import com.example.manage.laundry.viewmodel.ShopOwnerViewModel.LoginState
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun ShopOwnerLoginScreen(
     viewModel: ShopOwnerViewModel,
-    onLoginSuccess: () -> Unit = {},
-    onNavigateToRegister: () -> Unit = {}
+    onLoginSuccess: () -> Unit,
+    onNavigateToRegister: () -> Unit,
 ) {
     val loginState by viewModel.loginState.collectAsState()
     var email by remember { mutableStateOf(BuildConfig.DUMMY_SHOP_OWNER_EMAIL) }
@@ -255,6 +255,10 @@ fun ShopOwnerLoginScreen(
 @Composable
 fun ShopOwnerLoginScreenPreview() {
     ManageLaundryAppTheme {
-        ShopOwnerLoginScreen(viewModel = fakeViewModel<ShopOwnerViewModel>())
+        ShopOwnerLoginScreen(
+            viewModel = fakeViewModel<ShopOwnerViewModel>(),
+            onLoginSuccess = { TODO("Not yet implemented") },
+            onNavigateToRegister = { TODO("Not yet implemented") }
+        )
     }
 }

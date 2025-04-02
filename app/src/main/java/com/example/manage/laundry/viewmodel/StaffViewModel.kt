@@ -1,14 +1,12 @@
 package com.example.manage.laundry.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.manage.laundry.data.model.request.*
 import com.example.manage.laundry.data.model.response.*
 import com.example.manage.laundry.di.repository.StaffRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,70 +14,85 @@ import javax.inject.Inject
 class StaffViewModel @Inject constructor(
     private val repository: StaffRepository
 ) : ViewModel() {
-    var uiState by mutableStateOf(StaffUiState())
-        private set
+
+    private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
+    val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
+
+    private val _orderState = MutableStateFlow<OrderState>(OrderState.Idle)
+    val orderState: StateFlow<OrderState> = _orderState.asStateFlow()
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
+            _loginState.value = LoginState.Loading
+            try {
                 val response = repository.login(StaffLoginRequest(email, password))
                 if (response.success) {
-                    uiState.copy(
-                        loginResponse = response.data,
-                        isLoading = false
-                    )
+                    _loginState.value = LoginState.Success(response.data)
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    _loginState.value = LoginState.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _loginState.value = LoginState.Error(e.message ?: "Unknown error")
             }
         }
     }
 
     fun getOrders() {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
+            _orderState.value = OrderState.Loading
+            try {
                 val response = repository.getOrders()
                 if (response.success) {
-                    uiState.copy(
-                        orders = response.data ?: emptyList(),
-                        isLoading = false
-                    )
+                    _orderState.value = OrderState.Success(response.data ?: emptyList())
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    _orderState.value = OrderState.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _orderState.value = OrderState.Error(e.message ?: "Unknown error")
             }
         }
     }
 
     fun updateOrderStatus(orderId: Int, status: String) {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true)
-            uiState = try {
-                val response = repository.updateOrderStatus(orderId, UpdateOrderStatusRequest(status))
+            _orderState.value = OrderState.Loading
+            try {
+                val response =
+                    repository.updateOrderStatus(orderId, UpdateOrderStatusRequest(status))
                 if (response.success) {
-                    uiState.copy(
-                        orders = uiState.orders.map { if (it.id == orderId) response.data ?: it else it },
-                        isLoading = false
+                    _orderState.value = OrderState.Success(
+                        _orderState.value.let { current ->
+                            if (current is OrderState.Success) {
+                                current.orders.map {
+                                    if (it.id == orderId) response.data ?: it else it
+                                }
+                            } else emptyList()
+                        }
                     )
                 } else {
-                    uiState.copy(error = response.message, isLoading = false)
+                    _orderState.value = OrderState.Error(response.message)
                 }
             } catch (e: Exception) {
-                uiState.copy(error = e.message, isLoading = false)
+                _orderState.value = OrderState.Error(e.message ?: "Unknown error")
             }
         }
     }
-}
 
-data class StaffUiState(
-    val loginResponse: StaffLoginResponse? = null,
-    val orders: List<OrderResponse> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
+
+
+// Sealed classes for different states
+
+    sealed class LoginState {
+        object Idle : LoginState()
+        object Loading : LoginState()
+        data class Success(val data: StaffLoginResponse?) : LoginState()
+        data class Error(val message: String) : LoginState()
+    }
+
+    sealed class OrderState {
+        object Idle : OrderState()
+        object Loading : OrderState()
+        data class Success(val orders: List<OrderResponse>) : OrderState()
+        data class Error(val message: String) : OrderState()
+    }
+}

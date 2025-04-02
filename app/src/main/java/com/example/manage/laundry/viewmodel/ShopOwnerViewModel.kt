@@ -189,43 +189,45 @@ class ShopOwnerViewModel @Inject constructor(
         _staffState.value = StaffState.Idle
         _serviceState.value = ServiceState.Idle
     }
-}
+
 
 // 🟢 Trạng thái cho từng chức năng
 
-sealed class LoginState {
-    fun getShopId(): Int? {
-        return when (this) {
-            is Success -> this.data?.shop?.id
-            else -> null
+    sealed class LoginState {
+        fun getShopId(): Int? {
+            return when (this) {
+                is Success -> this.data?.shop?.id
+                else -> null
+            }
         }
+
+        object Idle : LoginState()
+        object Loading : LoginState()
+        data class Success(val data: LoginResponse?) : LoginState()
+        data class Error(val message: String) : LoginState()
     }
 
-    object Idle : LoginState()
-    object Loading : LoginState()
-    data class Success(val data: LoginResponse?) : LoginState()
-    data class Error(val message: String) : LoginState()
-}
+    sealed class RegisterState {
+        object Idle : RegisterState()
+        object Loading : RegisterState()
+        data class Success(val data: RegisterOwnerResponse?) : RegisterState()
+        data class Error(val message: String) : RegisterState()
+    }
 
-sealed class RegisterState {
-    object Idle : RegisterState()
-    object Loading : RegisterState()
-    data class Success(val data: RegisterOwnerResponse?) : RegisterState()
-    data class Error(val message: String) : RegisterState()
-}
+    sealed class StaffState {
+        object Idle : StaffState()
+        object Loading : StaffState()
+        object Added : StaffState()
+        data class Success(val staffs: List<UserResponse>) : StaffState()
+        data class Error(val message: String) : StaffState()
+    }
 
-sealed class StaffState {
-    object Idle : StaffState()
-    object Loading : StaffState()
-    object Added : StaffState()
-    data class Success(val staffs: List<UserResponse>) : StaffState()
-    data class Error(val message: String) : StaffState()
-}
+    sealed class ServiceState {
+        object Idle : ServiceState()
+        object Loading : ServiceState()
+        object Added : ServiceState()
+        data class Success(val services: List<ShopServiceResponse>) : ServiceState()
+        data class Error(val message: String) : ServiceState()
+    }
 
-sealed class ServiceState {
-    object Idle : ServiceState()
-    object Loading : ServiceState()
-    object Added : ServiceState()
-    data class Success(val services: List<ShopServiceResponse>) : ServiceState()
-    data class Error(val message: String) : ServiceState()
 }
