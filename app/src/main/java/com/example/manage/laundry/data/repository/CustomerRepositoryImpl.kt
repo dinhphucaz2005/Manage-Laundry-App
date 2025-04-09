@@ -1,8 +1,10 @@
 package com.example.manage.laundry.data.repository
 
+import com.example.manage.laundry.data.model.request.CreateOrderRequest
 import com.example.manage.laundry.data.model.request.CustomerLoginRequest
 import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
 import com.example.manage.laundry.data.model.response.ApiResponse
+import com.example.manage.laundry.data.model.response.CreateOrderResponse
 import com.example.manage.laundry.data.model.response.CustomerLoginResponse
 import com.example.manage.laundry.data.model.response.OrderHistoryResponse
 import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
@@ -33,5 +35,8 @@ class CustomerRepositoryImpl(
 
     override suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse> =
         apiService.trackOrder(orderId)
+
+    override suspend fun createOrder(request: CreateOrderRequest): ApiResponse<CreateOrderResponse> =
+        apiService.createOrder(request)
 }
 

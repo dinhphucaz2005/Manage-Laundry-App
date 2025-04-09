@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,13 +29,14 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,12 +49,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.manage.laundry.R
+import com.example.manage.laundry.viewmodel.CustomerState
 import com.example.manage.laundry.viewmodel.CustomerViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomerHomeContent(viewModel: CustomerViewModel) {
+
+    LaunchedEffect(Unit) {
+        viewModel.searchShops()
+    }
+
+    val shopSearchState by viewModel.shopSearchState.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -151,25 +160,41 @@ fun CustomerHomeContent(viewModel: CustomerViewModel) {
             fontWeight = FontWeight.Bold
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.height(500.dp)
-        ) {
-            items(
-                listOf(
-                    ShopItem("Tiệm Giặt ABC", "2.5 km", 4.5f, "08:00 - 21:00"),
-                    ShopItem("Giặt Sấy Nhanh", "1.2 km", 4.2f, "07:00 - 22:00"),
-                    ShopItem("Giặt Ủi Sạch Sẽ", "3.1 km", 4.8f, "09:00 - 20:00"),
-                    ShopItem("Tiệm Giặt 24h", "4.5 km", 3.9f, "00:00 - 23:59"),
-                    ShopItem("Giặt Cao Cấp", "2.8 km", 5.0f, "08:00 - 18:00"),
-                    ShopItem("Giặt & Giao Nhanh", "1.7 km", 4.1f, "07:00 - 19:00")
-                )
-            ) { shop ->
-                ShopCard(shop) { /* TODO: Navigate to shop details */ }
+        when (val result = shopSearchState) {
+            is CustomerState.ShopSearch.Error -> {
+                TODO()
+            }
+
+            CustomerState.ShopSearch.Idle -> CircularProgressIndicator()
+
+            CustomerState.ShopSearch.Loading -> CircularProgressIndicator()
+            is CustomerState.ShopSearch.Success -> {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.height(500.dp)
+                ) {
+                    itemsIndexed(
+                        items = result.shops,
+                        key = { _, item -> item.shopId }) { _, item ->
+                        ShopCard(
+                            shop = ShopItem(
+                                name = item.name,
+                                distance = "${item.location.length} km",
+                                rating = item.averageRating.toFloat(),
+                                hours = "Mở cửa: ${item.openTime}"
+                            ),
+                            onClick = {
+                                // Handle shop click
+                            }
+                        )
+                    }
+                }
             }
         }
+
+
     }
 }
 

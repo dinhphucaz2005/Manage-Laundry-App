@@ -13,4 +13,6 @@ interface CustomerRepository {
     suspend fun getOrderHistory(): ApiResponse<List<OrderHistoryResponse>>
 
     suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse>
+
+    suspend fun createOrder(request: CreateOrderRequest): ApiResponse<CreateOrderResponse>
 }

@@ -5,5 +5,8 @@ import com.example.manage.laundry.viewmodel.CustomerViewModel
 
 @Composable
 fun CustomerAccountScreen(viewModel: CustomerViewModel) {
-    // TODO: Màn hình tài khoản
+    CreateOrderScreen(
+        shopId = 0,
+        viewModel = viewModel
+    )
 }

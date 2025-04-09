@@ -19,16 +19,25 @@ class CustomerViewModel @Inject constructor(
     private val _loginState = MutableStateFlow<CustomerState.Login>(CustomerState.Login.Idle)
     val loginState: StateFlow<CustomerState.Login> = _loginState
 
-    private val _registerState = MutableStateFlow<CustomerState.Register>(CustomerState.Register.Idle)
+    private val _registerState =
+        MutableStateFlow<CustomerState.Register>(CustomerState.Register.Idle)
     val registerState: StateFlow<CustomerState.Register> = _registerState
 
-    private val _shopSearchState = MutableStateFlow<CustomerState.ShopSearch>(CustomerState.ShopSearch.Idle)
+    private val _shopSearchState =
+        MutableStateFlow<CustomerState.ShopSearch>(CustomerState.ShopSearch.Idle)
     val shopSearchState: StateFlow<CustomerState.ShopSearch> = _shopSearchState
 
-    private val _orderHistoryState = MutableStateFlow<CustomerState.OrderHistory>(CustomerState.OrderHistory.Idle)
+
+    private val _createOrderState =
+        MutableStateFlow<CustomerState.CreateOrder>(CustomerState.CreateOrder.Idle)
+    val createOrderState: StateFlow<CustomerState.CreateOrder> = _createOrderState
+
+    private val _orderHistoryState =
+        MutableStateFlow<CustomerState.OrderHistory>(CustomerState.OrderHistory.Idle)
     val orderHistoryState: StateFlow<CustomerState.OrderHistory> = _orderHistoryState
 
-    private val _trackOrderState = MutableStateFlow<CustomerState.TrackOrder>(CustomerState.TrackOrder.Idle)
+    private val _trackOrderState =
+        MutableStateFlow<CustomerState.TrackOrder>(CustomerState.TrackOrder.Idle)
     val trackOrderState: StateFlow<CustomerState.TrackOrder> = _trackOrderState
 
     fun login(email: String, password: String) {
@@ -51,15 +60,22 @@ class CustomerViewModel @Inject constructor(
         viewModelScope.launch {
             _registerState.value = CustomerState.Register.Loading
             try {
-                val response = repository.register(CustomerRegisterRequest(name, email, password, phone))
+                val response =
+                    repository.register(CustomerRegisterRequest(name, email, password, phone))
                 _registerState.value = if (response.success && response.data != null) {
                     CustomerState.Register.Success(response.data)
                 } else {
                     CustomerState.Register.Error(response.message)
                 }
             } catch (e: Exception) {
-                _registerState.value = CustomerState.Register.Error(e.message ?: "Lỗi không xác định")
+                _registerState.value =
+                    CustomerState.Register.Error(e.message ?: "Lỗi không xác định")
             }
+        }
+    }
+
+    fun createOrder(request: CreateOrderRequest) {
+        viewModelScope.launch {
         }
     }
 
@@ -74,7 +90,8 @@ class CustomerViewModel @Inject constructor(
                     CustomerState.ShopSearch.Error(response.message)
                 }
             } catch (e: Exception) {
-                _shopSearchState.value = CustomerState.ShopSearch.Error(e.message ?: "Lỗi không xác định")
+                _shopSearchState.value =
+                    CustomerState.ShopSearch.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
@@ -90,7 +107,8 @@ class CustomerViewModel @Inject constructor(
                     CustomerState.OrderHistory.Error(response.message)
                 }
             } catch (e: Exception) {
-                _orderHistoryState.value = CustomerState.OrderHistory.Error(e.message ?: "Lỗi không xác định")
+                _orderHistoryState.value =
+                    CustomerState.OrderHistory.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
@@ -106,7 +124,8 @@ class CustomerViewModel @Inject constructor(
                     CustomerState.TrackOrder.Error(response.message)
                 }
             } catch (e: Exception) {
-                _trackOrderState.value = CustomerState.TrackOrder.Error(e.message ?: "Lỗi không xác định")
+                _trackOrderState.value =
+                    CustomerState.TrackOrder.Error(e.message ?: "Lỗi không xác định")
             }
         }
     }
@@ -134,6 +153,13 @@ sealed class CustomerState {
         data object Loading : ShopSearch()
         data class Success(val shops: List<ShopSearchResponse>) : ShopSearch()
         data class Error(val message: String) : ShopSearch()
+    }
+
+    sealed class CreateOrder : CustomerState() {
+        data object Idle : CreateOrder()
+        data object Loading : CreateOrder()
+        data class Success(val orders: List<CreateOrderResponse>) : CreateOrder()
+        data class Error(val message: String) : CreateOrder()
     }
 
     sealed class OrderHistory : CustomerState() {

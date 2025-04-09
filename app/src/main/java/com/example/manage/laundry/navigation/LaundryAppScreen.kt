@@ -8,6 +8,7 @@ sealed class LaundryAppScreen(val route: String) {
     data object CustomerLogin : LaundryAppScreen("customer_login")
     data object CustomerHome : LaundryAppScreen("customer_home")
     data object CustomerRegister : LaundryAppScreen("customer_register")
+    data object CustomerOrder : LaundryAppScreen("customer_order")
 
     data object ShopOwnerLogin : LaundryAppScreen("shop_owner_login")
     data object ShopOwnerHome : LaundryAppScreen("shop_owner_home")

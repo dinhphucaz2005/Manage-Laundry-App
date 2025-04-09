@@ -6,6 +6,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import com.example.manage.laundry.BuildConfig
+import com.example.manage.laundry.data.model.request.CreateOrderRequest
 import com.example.manage.laundry.data.model.request.CreateServiceRequest
 import com.example.manage.laundry.data.model.request.CustomerLoginRequest
 import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
@@ -18,6 +19,7 @@ import com.example.manage.laundry.data.model.request.UpdateOrderRequest
 import com.example.manage.laundry.data.model.request.UpdateOrderStatusRequest
 import com.example.manage.laundry.data.model.request.UpdateServiceRequest
 import com.example.manage.laundry.data.model.response.ApiResponse
+import com.example.manage.laundry.data.model.response.CreateOrderResponse
 import com.example.manage.laundry.data.model.response.CustomerLoginResponse
 import com.example.manage.laundry.data.model.response.GetStaffsResponse
 import com.example.manage.laundry.data.model.response.LoginResponse
@@ -137,6 +139,18 @@ private val customerRepository = object : CustomerRepository {
                     String.now()
                 )
         )
+
+    override suspend fun createOrder(request: CreateOrderRequest): ApiResponse<CreateOrderResponse> {
+        return ApiResponse(
+            data =
+                CreateOrderResponse(
+                    orderId = 1,
+                    totalPrice = 5,
+                    status = "sdlk",
+                    createdAt = "L",
+                )
+        )
+    }
 }
 
 private val shopOwnerRepository = object : ShopOwnerRepository {
@@ -241,7 +255,13 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
     ): ApiResponse<ShopServiceResponse> =
         ApiResponse(
             data =
-                ShopServiceResponse(serviceId, request.name, request.description, request.price.toDouble(), 1)
+                ShopServiceResponse(
+                    serviceId,
+                    request.name,
+                    request.description,
+                    request.price.toDouble(),
+                    1
+                )
         )
 
     override suspend fun deleteService(serviceId: Int): ApiResponse<Unit> =

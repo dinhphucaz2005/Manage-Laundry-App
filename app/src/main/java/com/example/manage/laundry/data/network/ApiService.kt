@@ -1,5 +1,6 @@
 package com.example.manage.laundry.data.network
 
+import com.example.manage.laundry.data.model.request.CreateOrderRequest
 import com.example.manage.laundry.data.model.request.CreateServiceRequest
 import com.example.manage.laundry.data.model.request.CustomerLoginRequest
 import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
@@ -11,6 +12,7 @@ import com.example.manage.laundry.data.model.request.UpdateOrderRequest
 import com.example.manage.laundry.data.model.request.UpdateOrderStatusRequest
 import com.example.manage.laundry.data.model.request.UpdateServiceRequest
 import com.example.manage.laundry.data.model.response.ApiResponse
+import com.example.manage.laundry.data.model.response.CreateOrderResponse
 import com.example.manage.laundry.data.model.response.CustomerLoginResponse
 import com.example.manage.laundry.data.model.response.GetStaffsResponse
 import com.example.manage.laundry.data.model.response.LoginResponse
@@ -151,5 +153,13 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
 
     suspend fun getServices(shopId: Int): ApiResponse<List<ShopServiceResponse>> =
         client.get("$baseUrl/owners/shops/$shopId/services").body()
+
+    suspend fun createOrder(createOrderRequest: CreateOrderRequest): ApiResponse<CreateOrderResponse> =
+        client.post("$baseUrl/customers/orders") {
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
+            setBody(createOrderRequest)
+        }.body()
 
 }
