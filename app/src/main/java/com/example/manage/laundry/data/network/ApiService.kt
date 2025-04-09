@@ -34,9 +34,16 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.append
 import io.ktor.http.contentType
 
+
 class ApiService(private val client: HttpClient, private val baseUrl: String) {
+
+    companion object {
+        var token: String? = null
+    }
 
     suspend fun test(): ApiResponse<String> = client.get("$baseUrl/hello").body()
 
@@ -133,7 +140,11 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
         client.get("$baseUrl/customers/shops").body()
 
     suspend fun getOrderHistory(): ApiResponse<List<OrderHistoryResponse>> =
-        client.get("$baseUrl/customers/orders").body()
+        client.get("$baseUrl/customers/orders") {
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
+        }.body()
 
     suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse> =
         client.get("$baseUrl/customers/orders/$orderId/track").body()
@@ -141,13 +152,4 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
     suspend fun getServices(shopId: Int): ApiResponse<List<ShopServiceResponse>> =
         client.get("$baseUrl/owners/shops/$shopId/services").body()
 
-    fun addAuthorizationHeader(token: String) {
-        client.config {
-            defaultRequest {
-                headers {
-                    append("Authorization", "Bearer $token")
-                }
-            }
-        }
-    }
 }

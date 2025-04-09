@@ -4,10 +4,6 @@ import androidx.compose.runtime.Composable
 import com.example.manage.laundry.viewmodel.CustomerViewModel
 
 @Composable
-fun CustomerOrderScreen(
-    viewModel: CustomerViewModel,
-    onNavigateToOrderDetail: () -> Unit,
-    onNavigateToCreateOrder: () -> Unit
-) {
-
+fun CustomerAccountScreen(viewModel: CustomerViewModel) {
+    // TODO: Màn hình tài khoản
 }

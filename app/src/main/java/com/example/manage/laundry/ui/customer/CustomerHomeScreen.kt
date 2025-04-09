@@ -166,33 +166,22 @@ fun CustomerHomeScreen(viewModel: CustomerViewModel) {
                     0 -> CustomerHomeContent(viewModel)
                     1 -> CustomerOrderScreen(
                         viewModel,
-                        onNavigateToOrderDetail = {/*TODO:PHUC_ND*/},
-                        onNavigateToCreateOrder = {/*TODO:PHUC_ND*/}
+                        onNavigateToOrderDetail = { TODO() },
+                        onNavigateToCreateOrder = { TODO() }
                     )
+
                     2 -> CustomerFavoriteScreen(viewModel)
-                    3 -> CustomerHistoryScreen(viewModel)
+                    3 -> CustomerHistoryScreen(
+                        viewModel = viewModel,
+                        onNavigateToOrderDetail = { TODO() },
+                        onNavigateToCreateOrder = { TODO() }
+                    )
+
                     4 -> CustomerAccountScreen(viewModel)
                 }
             }
         }
     }
-}
-
-
-
-@Composable
-fun CustomerFavoriteScreen(viewModel: CustomerViewModel) {
-    // TODO: Màn hình yêu thích
-}
-
-@Composable
-fun CustomerHistoryScreen(viewModel: CustomerViewModel) {
-    // TODO: Màn hình lịch sử đơn hàng
-}
-
-@Composable
-fun CustomerAccountScreen(viewModel: CustomerViewModel) {
-    // TODO: Màn hình tài khoản
 }
 
 @Preview

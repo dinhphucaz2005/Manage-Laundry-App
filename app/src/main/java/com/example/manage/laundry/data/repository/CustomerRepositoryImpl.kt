@@ -20,7 +20,7 @@ class CustomerRepositoryImpl(
     override suspend fun login(request: CustomerLoginRequest): ApiResponse<CustomerLoginResponse> {
         val result = apiService.loginCustomer(request)
         if (result.success && result.data != null) {
-            apiService.addAuthorizationHeader(result.data.token)
+            ApiService.token = result.data.token
         }
         return result
     }

@@ -108,7 +108,7 @@ private val customerRepository = object : CustomerRepository {
                     OrderHistoryResponse(
                         1,
                         "Tiệm Giặt ABC",
-                        50000,
+                        50000.0,
                         "COMPLETED",
                         String.now(),
                         String.now()
@@ -116,7 +116,7 @@ private val customerRepository = object : CustomerRepository {
                     OrderHistoryResponse(
                         2,
                         "Tiệm Giặt XYZ",
-                        70000,
+                        70000.0,
                         "PENDING",
                         String.now(),
                         String.now()

@@ -113,39 +113,39 @@ class CustomerViewModel @Inject constructor(
 }
 
 sealed class CustomerState {
-    object Idle : CustomerState()
+    data object Idle : CustomerState()
 
     sealed class Login : CustomerState() {
-        object Idle : Login()
-        object Loading : Login()
+        data object Idle : Login()
+        data object Loading : Login()
         data class Success(val response: CustomerLoginResponse) : Login()
         data class Error(val message: String) : Login()
     }
 
     sealed class Register : CustomerState() {
-        object Idle : Register()
-        object Loading : Register()
+        data object Idle : Register()
+        data object Loading : Register()
         data class Success(val response: RegisterCustomerResponse) : Register()
         data class Error(val message: String) : Register()
     }
 
     sealed class ShopSearch : CustomerState() {
-        object Idle : ShopSearch()
-        object Loading : ShopSearch()
+        data object Idle : ShopSearch()
+        data object Loading : ShopSearch()
         data class Success(val shops: List<ShopSearchResponse>) : ShopSearch()
         data class Error(val message: String) : ShopSearch()
     }
 
     sealed class OrderHistory : CustomerState() {
-        object Idle : OrderHistory()
-        object Loading : OrderHistory()
+        data object Idle : OrderHistory()
+        data object Loading : OrderHistory()
         data class Success(val orders: List<OrderHistoryResponse>) : OrderHistory()
         data class Error(val message: String) : OrderHistory()
     }
 
     sealed class TrackOrder : CustomerState() {
-        object Idle : TrackOrder()
-        object Loading : TrackOrder()
+        data object Idle : TrackOrder()
+        data object Loading : TrackOrder()
         data class Success(val order: TrackOrderResponse) : TrackOrder()
         data class Error(val message: String) : TrackOrder()
     }

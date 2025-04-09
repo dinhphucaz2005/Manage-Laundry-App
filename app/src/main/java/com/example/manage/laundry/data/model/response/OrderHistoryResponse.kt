@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class OrderHistoryResponse(
     val orderId: Int,
     val shopName: String,
-    val totalPrice: Int,
+    val totalPrice: Double,
     val status: String,
     val createdAt: String,
     val updatedAt: String
