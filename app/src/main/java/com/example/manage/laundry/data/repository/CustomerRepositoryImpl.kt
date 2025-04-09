@@ -2,7 +2,12 @@ package com.example.manage.laundry.data.repository
 
 import com.example.manage.laundry.data.model.request.CustomerLoginRequest
 import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
-import com.example.manage.laundry.data.model.response.*
+import com.example.manage.laundry.data.model.response.ApiResponse
+import com.example.manage.laundry.data.model.response.CustomerLoginResponse
+import com.example.manage.laundry.data.model.response.OrderHistoryResponse
+import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
+import com.example.manage.laundry.data.model.response.ShopSearchResponse
+import com.example.manage.laundry.data.model.response.TrackOrderResponse
 import com.example.manage.laundry.data.network.ApiService
 import com.example.manage.laundry.di.repository.CustomerRepository
 
@@ -12,8 +17,13 @@ class CustomerRepositoryImpl(
     override suspend fun register(request: CustomerRegisterRequest): ApiResponse<RegisterCustomerResponse> =
         apiService.registerCustomer(request)
 
-    override suspend fun login(request: CustomerLoginRequest): ApiResponse<CustomerLoginResponse> =
-        apiService.loginCustomer(request)
+    override suspend fun login(request: CustomerLoginRequest): ApiResponse<CustomerLoginResponse> {
+        val result = apiService.loginCustomer(request)
+        if (result.success && result.data != null) {
+            apiService.addAuthorizationHeader(result.data.token)
+        }
+        return result
+    }
 
     override suspend fun searchShops(): ApiResponse<List<ShopSearchResponse>> =
         apiService.searchShops()

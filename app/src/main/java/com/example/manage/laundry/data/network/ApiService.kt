@@ -1,11 +1,40 @@
 package com.example.manage.laundry.data.network
 
-import com.example.manage.laundry.data.model.request.*
-import com.example.manage.laundry.data.model.response.*
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import com.example.manage.laundry.data.model.request.CreateServiceRequest
+import com.example.manage.laundry.data.model.request.CustomerLoginRequest
+import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
+import com.example.manage.laundry.data.model.request.OwnerLoginRequest
+import com.example.manage.laundry.data.model.request.ShopRegisterRequest
+import com.example.manage.laundry.data.model.request.StaffLoginRequest
+import com.example.manage.laundry.data.model.request.StaffRegisterRequest
+import com.example.manage.laundry.data.model.request.UpdateOrderRequest
+import com.example.manage.laundry.data.model.request.UpdateOrderStatusRequest
+import com.example.manage.laundry.data.model.request.UpdateServiceRequest
+import com.example.manage.laundry.data.model.response.ApiResponse
+import com.example.manage.laundry.data.model.response.CustomerLoginResponse
+import com.example.manage.laundry.data.model.response.GetStaffsResponse
+import com.example.manage.laundry.data.model.response.LoginResponse
+import com.example.manage.laundry.data.model.response.OrderHistoryResponse
+import com.example.manage.laundry.data.model.response.OrderResponse
+import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
+import com.example.manage.laundry.data.model.response.RegisterOwnerResponse
+import com.example.manage.laundry.data.model.response.RegisterStaffResponse
+import com.example.manage.laundry.data.model.response.ShopOrderResponse
+import com.example.manage.laundry.data.model.response.ShopSearchResponse
+import com.example.manage.laundry.data.model.response.ShopServiceResponse
+import com.example.manage.laundry.data.model.response.StaffLoginResponse
+import com.example.manage.laundry.data.model.response.TrackOrderResponse
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
 class ApiService(private val client: HttpClient, private val baseUrl: String) {
 
@@ -111,4 +140,14 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
 
     suspend fun getServices(shopId: Int): ApiResponse<List<ShopServiceResponse>> =
         client.get("$baseUrl/owners/shops/$shopId/services").body()
+
+    fun addAuthorizationHeader(token: String) {
+        client.config {
+            defaultRequest {
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+            }
+        }
+    }
 }
