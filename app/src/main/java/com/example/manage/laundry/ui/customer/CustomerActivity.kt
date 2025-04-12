@@ -1,7 +1,6 @@
 package com.example.manage.laundry.ui.customer
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.NavType
@@ -9,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.manage.laundry.BaseActivity
 import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.customer.navigation.CustomerRoute
 import com.example.manage.laundry.ui.customer.screen.auth.CustomerLoginScreen
@@ -17,7 +17,7 @@ import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CustomerActivity : ComponentActivity() {
+class CustomerActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
