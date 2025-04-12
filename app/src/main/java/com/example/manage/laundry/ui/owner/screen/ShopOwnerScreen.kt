@@ -1,4 +1,4 @@
-package com.example.manage.laundry.ui.owner
+package com.example.manage.laundry.ui.owner.screen
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding

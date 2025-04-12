@@ -1,4 +1,4 @@
-package com.example.manage.laundry.ui.owner
+package com.example.manage.laundry.ui.owner.screen
 
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.Spring
@@ -19,7 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
+import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import ir.ehsannarmani.compose_charts.LineChart
 import ir.ehsannarmani.compose_charts.PieChart
 import ir.ehsannarmani.compose_charts.models.AnimationMode
@@ -28,7 +30,7 @@ import ir.ehsannarmani.compose_charts.models.Line
 import ir.ehsannarmani.compose_charts.models.Pie
 
 @Composable
-fun ManageStatisticsScreen() {
+fun ManageAccountScreen(viewModel: ShopOwnerViewModel = fakeViewModel<ShopOwnerViewModel>()) {
     var data by remember {
         mutableStateOf(
             listOf(
@@ -73,9 +75,9 @@ fun ManageStatisticsScreen() {
                         color = SolidColor(Color(0xFF23af92)),
                         firstGradientFillColor = Color(0xFF2BC0A1).copy(alpha = .5f),
                         secondGradientFillColor = Color.Transparent,
-                        strokeAnimationSpec = tween(1000, easing = EaseInOutCubic),
+                        strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
+                        gradientAnimationDelay = 1000,
                         drawStyle = DrawStyle.Stroke(width = 2.dp),
-                        curvedEdges = true
                     )
                 )
             },
@@ -88,7 +90,7 @@ fun ManageStatisticsScreen() {
 
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun ManageStatisticsScreenPreview() {
     ManageLaundryAppTheme {

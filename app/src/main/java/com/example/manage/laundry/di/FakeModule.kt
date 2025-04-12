@@ -41,8 +41,8 @@ import com.example.manage.laundry.di.repository.ShopOwnerRepository
 import com.example.manage.laundry.di.repository.StaffRepository
 import com.example.manage.laundry.di.repository.TestRepository
 import com.example.manage.laundry.ui.customer.CustomerViewModel
+import com.example.manage.laundry.ui.staff.StaffViewModel
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
-import com.example.manage.laundry.viewmodel.StaffViewModel
 import com.example.manage.laundry.viewmodel.TestViewModel
 import kotlinx.coroutines.delay
 import java.time.LocalDate
@@ -347,18 +347,7 @@ private val staffRepository = object : StaffRepository {
     override suspend fun updateOrderStatus(
         orderId: Int,
         request: UpdateOrderStatusRequest
-    ): ApiResponse<OrderResponse> =
-        ApiResponse(
-            data = OrderResponse(
-                orderId,
-                "Tiệm Giặt ABC",
-                "Nguyễn Văn A",
-                50000.0,
-                Order.Status.valueOf(request.status),
-                null,
-                String.now()
-            )
-        )
+    ): ApiResponse<Nothing> = ApiResponse(success = true, "Cập nhật trạng thái đơn hàng thành công")
 }
 
 private val testRepository = object : TestRepository {

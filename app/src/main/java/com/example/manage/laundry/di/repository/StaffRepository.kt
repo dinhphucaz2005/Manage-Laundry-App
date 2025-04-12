@@ -14,5 +14,5 @@ interface StaffRepository {
     suspend fun updateOrderStatus(
         orderId: Int,
         request: UpdateOrderStatusRequest
-    ): ApiResponse<OrderResponse>
+    ): ApiResponse<Nothing>
 }

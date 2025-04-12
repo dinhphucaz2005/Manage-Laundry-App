@@ -114,14 +114,17 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
         }.body()
 
     suspend fun getStaffOrders(): ApiResponse<List<OrderResponse>> =
-        client.get("$baseUrl/staff/orders").body()
+        client.get("$baseUrl/staff/orders") {
+            addAuthorization()
+        }.body()
 
     suspend fun updateOrderStatus(
         orderId: Int,
         request: UpdateOrderStatusRequest
-    ): ApiResponse<OrderResponse> =
+    ): ApiResponse<Nothing> =
         client.put("$baseUrl/staff/orders/$orderId/status") {
             contentType(ContentType.Application.Json)
+            addAuthorization()
             setBody(request)
         }.body()
 

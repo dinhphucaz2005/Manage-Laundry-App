@@ -23,9 +23,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.manage.laundry.data.model.response.ShopDetailResponse
+import com.example.manage.laundry.utils.formatCurrency
 
 
 @Composable
@@ -38,6 +40,9 @@ fun OrderBottomSheet(
     onAddToCart: () -> Unit,
     onDismiss: () -> Unit
 ) {
+
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -105,7 +110,7 @@ fun OrderBottomSheet(
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "Thành tiền: ${service.price * quantity}đ",
+                text = "Thành tiền: ${formatCurrency(context, service.price * quantity)}đ",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary

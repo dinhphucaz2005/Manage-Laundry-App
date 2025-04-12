@@ -1,6 +1,5 @@
-package com.example.manage.laundry.ui.customer
+package com.example.manage.laundry.ui.staff.screen
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -19,24 +18,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.manage.laundry.LocalSnackbarHostState
 import com.example.manage.laundry.di.fakeViewModel
-import com.example.manage.laundry.ui.customer.model.CustomerTab
-import com.example.manage.laundry.ui.customer.screen.CustomerHomeContent
-import com.example.manage.laundry.ui.customer.screen.order.CustomerOrderScreen
+import com.example.manage.laundry.ui.component.Placeholder
+import com.example.manage.laundry.ui.staff.StaffViewModel
+import com.example.manage.laundry.ui.staff.model.StaffTab
+import com.example.manage.laundry.ui.staff.screen.home.StaffHomeScreen
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import kotlinx.coroutines.launch
 
+@Preview
 @Composable
-fun CustomerScreen(
-    customerViewModel: CustomerViewModel,
-    onNavigateToShopDetail: (Int) -> Unit,
+private fun StaffScreenPreview() {
+    ManageLaundryAppTheme {
+        StaffScreen(
+            staffViewModel = fakeViewModel<StaffViewModel>(),
+        )
+    }
+}
+
+@Composable
+fun StaffScreen(
+    staffViewModel: StaffViewModel,
 ) {
-    val horizontalPageState = rememberPagerState(pageCount = { CustomerTab.entries.size })
+    val horizontalPageState = rememberPagerState(pageCount = { StaffTab.entries.size })
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -70,7 +78,7 @@ fun CustomerScreen(
                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     tonalElevation = 8.dp
                 ) {
-                    CustomerTab.entries.forEachIndexed { index, item ->
+                    StaffTab.entries.forEachIndexed { index, item ->
                         NavigationBarItem(
                             selected = horizontalPageState.currentPage == index,
                             onClick = {
@@ -115,29 +123,13 @@ fun CustomerScreen(
                 state = horizontalPageState
             ) { page: Int ->
                 when (page) {
-                    0 -> CustomerHomeContent(
-                        customerViewModel = customerViewModel,
-                        onNavigateToShopDetail = onNavigateToShopDetail
-                    )
-
-                    1 -> CustomerOrderScreen(customerViewModel = customerViewModel)
-
-                    2 -> Box { Text("PLACE HOLDER", modifier = Modifier.align(Alignment.Center)) }
-                    3 -> Box { Text("PLACE HOLDER", modifier = Modifier.align(Alignment.Center)) }
-                    4 -> Box { Text("PLACE HOLDER", modifier = Modifier.align(Alignment.Center)) }
+                    0 -> StaffHomeScreen(staffViewModel = staffViewModel)
+                    1 -> Placeholder()
+                    2 -> Placeholder()
+                    3 -> Placeholder()
+                    4 -> Placeholder()
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun CustomerHomeScreenPreview() {
-    ManageLaundryAppTheme {
-        CustomerScreen(
-            customerViewModel = fakeViewModel(),
-            onNavigateToShopDetail = {}
-        )
     }
 }

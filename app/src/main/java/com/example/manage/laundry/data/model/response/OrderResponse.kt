@@ -12,4 +12,9 @@ data class OrderResponse(
     val status: Order.Status,
     val specialInstructions: String?,
     val createdAt: String
-)
+) {
+    fun getCreateAtString(): String {
+        val regex = Regex("""(\d{4})-(\d{2})-(\d{2})T(\d{2}:\d{2}:\d{2})(?:\.\d+)?""")
+        return regex.replace(createdAt, "$4 $3-$2-$1")
+    }
+}

@@ -12,4 +12,5 @@
     <string name="Circle">Circle</string>
     <string name="Drop">Drop</string>
     <string name="Leaf">Leaf</string>
+    <string name="vnd_format">%sđ</string>
 </resources>

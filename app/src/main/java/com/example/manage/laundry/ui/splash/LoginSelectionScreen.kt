@@ -1,4 +1,4 @@
-package com.example.manage.laundry.ui.screens
+package com.example.manage.laundry.ui.splash
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

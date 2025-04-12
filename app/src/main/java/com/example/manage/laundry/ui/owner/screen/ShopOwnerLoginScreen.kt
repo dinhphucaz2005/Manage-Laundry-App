@@ -1,4 +1,4 @@
-package com.example.manage.laundry.ui.staff
+package com.example.manage.laundry.ui.owner.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -24,24 +24,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.manage.laundry.BuildConfig
-import com.example.manage.laundry.viewmodel.StaffViewModel
+import com.example.manage.laundry.di.fakeViewModel
+import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
+import com.example.manage.laundry.viewmodel.ShopOwnerViewModel.LoginState
+import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun StaffLoginScreen(
-    viewModel: StaffViewModel,
+fun ShopOwnerLoginScreen(
+    viewModel: ShopOwnerViewModel,
     onLoginSuccess: () -> Unit,
+    onNavigateToRegister: () -> Unit,
 ) {
     val loginState by viewModel.loginState.collectAsState()
-    var email by remember { mutableStateOf(BuildConfig.DUMMY_STAFF_EMAIL) }
-    var password by remember { mutableStateOf(BuildConfig.DUMMY_STAFF_PASSWORD) }
+    var email by remember { mutableStateOf(BuildConfig.DUMMY_SHOP_OWNER_EMAIL) }
+    var password by remember { mutableStateOf(BuildConfig.DUMMY_SHOP_OWNER_PASSWORD) }
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(loginState) {
-        if (loginState is StaffViewModel.LoginState.Success) {
+        if (loginState is LoginState.Success) {
             delay(2000)
             onLoginSuccess()
         }
@@ -61,10 +66,10 @@ fun StaffLoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Logo or Icon
+            // Logo hoặc Icon
             Icon(
                 imageVector = Icons.Default.Person,
-                contentDescription = "Staff Icon",
+                contentDescription = "Shop Owner Icon",
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
@@ -77,7 +82,7 @@ fun StaffLoginScreen(
 
             // Header
             Text(
-                text = "Đăng Nhập Nhân Viên",
+                text = "Đăng Nhập Chủ Cửa Hàng",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -91,7 +96,7 @@ fun StaffLoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Card containing login form
+            // Card chứa form đăng nhập
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -161,7 +166,7 @@ fun StaffLoginScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Forgot password link
+                    // Liên kết Quên mật khẩu
                     TextButton(onClick = { /* TODO: Handle forgot password */ }) {
                         Text(
                             text = "Quên mật khẩu?",
@@ -172,7 +177,7 @@ fun StaffLoginScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Login button
+                    // Nút đăng nhập
                     Button(
                         onClick = { viewModel.login(email, password) },
                         modifier = Modifier
@@ -186,26 +191,26 @@ fun StaffLoginScreen(
                 }
             }
 
-            // Loading, error, or success state
+            // Trạng thái loading, lỗi, hoặc thành công
             Spacer(modifier = Modifier.height(24.dp))
 
             AnimatedVisibility(
-                visible = loginState is StaffViewModel.LoginState.Loading ||
-                        loginState is StaffViewModel.LoginState.Error ||
-                        loginState is StaffViewModel.LoginState.Success,
+                visible = loginState is LoginState.Loading ||
+                        loginState is LoginState.Error ||
+                        loginState is LoginState.Success,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
                 when (loginState) {
-                    is StaffViewModel.LoginState.Loading -> {
+                    is LoginState.Loading -> {
                         CircularProgressIndicator(
                             modifier = Modifier.size(40.dp)
                         )
                     }
 
-                    is StaffViewModel.LoginState.Error -> {
+                    is LoginState.Error -> {
                         Text(
-                            text = "Lỗi: ${(loginState as StaffViewModel.LoginState.Error).message}",
+                            text = "Lỗi: ${(loginState as LoginState.Error).message}",
                             fontSize = 14.sp,
                             color = Color.Red,
                             modifier = Modifier
@@ -214,9 +219,9 @@ fun StaffLoginScreen(
                         )
                     }
 
-                    is StaffViewModel.LoginState.Success -> {
+                    is LoginState.Success -> {
                         Text(
-                            text = "Chào mừng, ${(loginState as StaffViewModel.LoginState.Success).data?.name}!",
+                            text = "Chào mừng, ${(loginState as LoginState.Success).data?.name}!",
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
@@ -226,11 +231,11 @@ fun StaffLoginScreen(
                         )
                     }
 
-                    StaffViewModel.LoginState.Idle -> {} // Do not display anything in the default state
+                    LoginState.Idle -> {} // Không hiển thị gì khi ở trạng thái mặc định
                 }
             }
 
-            // Navigate to register button
+            // Nút chuyển sang đăng ký
             Spacer(modifier = Modifier.height(16.dp))
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -238,10 +243,22 @@ fun StaffLoginScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Chưa có tài khoản?", fontSize = 14.sp, color = Color.Gray)
-                TextButton(onClick = { /* TODO: Navigate to Register */ }) {
+                TextButton(onClick = onNavigateToRegister) {
                     Text("Đăng ký ngay", fontSize = 14.sp)
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShopOwnerLoginScreenPreview() {
+    ManageLaundryAppTheme {
+        ShopOwnerLoginScreen(
+            viewModel = fakeViewModel<ShopOwnerViewModel>(),
+            onLoginSuccess = { TODO("Not yet implemented") },
+            onNavigateToRegister = { TODO("Not yet implemented") }
+        )
     }
 }

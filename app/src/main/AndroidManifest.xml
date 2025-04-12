@@ -18,13 +18,25 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.owner.ShopOwnerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ManageLaundryApp" />
+
+        <activity
+            android:name=".ui.staff.StaffActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ManageLaundryApp" />
+
+        <activity
             android:name=".ui.customer.CustomerActivity"
             android:exported="true"
             android:theme="@style/Theme.ManageLaundryApp" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ManageLaundryApp">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

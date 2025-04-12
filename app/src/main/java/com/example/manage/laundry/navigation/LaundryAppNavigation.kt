@@ -7,14 +7,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.manage.laundry.di.fakeViewModel
-import com.example.manage.laundry.ui.screens.LoginSelectionScreen
-import com.example.manage.laundry.ui.screens.SplashScreen
-import com.example.manage.laundry.ui.screens.TestScreen
+import com.example.manage.laundry.ui.splash.LoginSelectionScreen
+import com.example.manage.laundry.ui.splash.SplashScreen
+import com.example.manage.laundry.ui.splash.TestScreen
 import com.example.manage.laundry.viewmodel.TestViewModel
 
 @Composable
 fun LaundryAppNavigation(
     onNavigateCustomerActivity: () -> Unit,
+    onNavigateShopOwnerActivity: () -> Unit,
+    onNavigateStaffActivity: () -> Unit,
 ) {
     val navController = rememberNavController()
 
@@ -31,12 +33,8 @@ fun LaundryAppNavigation(
 
         composable(LaundryAppScreen.LoginSelection.route) {
             LoginSelectionScreen(
-                onShopOwnerLoginRequest = {
-                    TODO()
-                },
-                onStaffLoginRequest = {
-                    TODO()
-                },
+                onShopOwnerLoginRequest = onNavigateShopOwnerActivity,
+                onStaffLoginRequest = onNavigateStaffActivity,
                 onCustomerLoginRequest = onNavigateCustomerActivity
             )
         }
