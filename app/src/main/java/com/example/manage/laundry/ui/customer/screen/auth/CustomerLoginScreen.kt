@@ -1,20 +1,44 @@
-package com.example.manage.laundry.ui.customer
+package com.example.manage.laundry.ui.customer.screen.auth
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,53 +46,61 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.manage.laundry.BuildConfig
 import com.example.manage.laundry.di.fakeViewModel
+import com.example.manage.laundry.ui.customer.CustomerState
+import com.example.manage.laundry.ui.customer.CustomerViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
-import com.example.manage.laundry.viewmodel.CustomerState
-import com.example.manage.laundry.viewmodel.CustomerViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun CustomerRegisterScreen(
+fun CustomerLoginScreen(
     viewModel: CustomerViewModel,
-    onLoginRequest: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onRegisterRequest: () -> Unit
 ) {
-    val registerState by viewModel.registerState.collectAsState()
-
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val loginState by viewModel.loginState.collectAsState()
+    var email by remember { mutableStateOf(BuildConfig.DUMMY_CUSTOMER_EMAIL) }
+    var password by remember { mutableStateOf(BuildConfig.DUMMY_CUSTOMER_PASSWORD) }
     var isPasswordVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(loginState) {
+        if (loginState is CustomerState.Login.Success) {
+            delay(2000)
+            onLoginSuccess()
+        }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
+                Brush.verticalGradient(
                     colors = listOf(
                         MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                         Color.White
                     )
                 )
-            )
+            ),
+        contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(horizontal = 32.dp),
-            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Logo hoặc Icon
+            // Icon Logo
             Icon(
                 imageVector = Icons.Default.Person,
-                contentDescription = "Register Icon",
+                contentDescription = "Customer Icon",
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
@@ -81,20 +113,20 @@ fun CustomerRegisterScreen(
 
             // Header
             Text(
-                text = "Đăng Ký Khách Hàng",
-                fontSize = 28.sp,
+                text = "Đăng Nhập Khách Hàng",
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text = "Tạo tài khoản để đặt dịch vụ giặt sấy",
-                fontSize = 18.sp,
+                text = "Đăng nhập để đặt dịch vụ giặt sấy",
+                fontSize = 16.sp,
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Card chứa form đăng ký
+            // Form đăng nhập
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -103,34 +135,10 @@ fun CustomerRegisterScreen(
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(14.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier.padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    // Name TextField
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = { Text("Họ và Tên") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Name Icon",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
-                        ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-                    )
-
-                    // Email TextField
+                    // Email
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -144,35 +152,17 @@ fun CustomerRegisterScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next
+                        ),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
-                        ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                        )
                     )
 
-                    // Phone TextField
-                    OutlinedTextField(
-                        value = phone,
-                        onValueChange = { phone = it },
-                        label = { Text("Số điện thoại") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Phone Icon",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
-                        ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
-                    )
-
-                    // Password TextField
+                    // Password
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -196,16 +186,27 @@ fun CustomerRegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = { viewModel.login(email, password) }
+                        ),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
-                        ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                        )
                     )
 
-                    // Nút đăng ký
+                    // Quên mật khẩu
+                    TextButton(onClick = { /* TODO: Handle forgot password */ }) {
+                        Text("Quên mật khẩu?", fontSize = 16.sp)
+                    }
+
+                    // Nút đăng nhập
                     Button(
-                        onClick = { viewModel.register(name, email, password, phone) },
+                        onClick = { viewModel.login(email, password) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
@@ -215,65 +216,57 @@ fun CustomerRegisterScreen(
                             contentColor = Color.White
                         )
                     ) {
-                        Text("Đăng Ký", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text("Đăng Nhập", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
 
-            // Trạng thái loading, lỗi, hoặc thành công
             Spacer(modifier = Modifier.height(24.dp))
-            AnimatedVisibility(
-                visible = registerState is CustomerState.Register.Loading ||
-                        registerState is CustomerState.Register.Error ||
-                        registerState is CustomerState.Register.Success,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                when (registerState) {
-                    is CustomerState.Register.Loading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(40.dp)
-                        )
-                    }
 
-                    is CustomerState.Register.Error -> {
-                        Text(
-                            text = "Lỗi: ${(registerState as CustomerState.Register.Error).message}",
-                            fontSize = 18.sp,
-                            modifier = Modifier
-                                .background(Color(0xFFFFE0E0), RoundedCornerShape(8.dp))
-                                .padding(8.dp)
-                        )
-                    }
-
-                    is CustomerState.Register.Success -> {
-                        Text(
-                            text = "Đăng ký thành công!",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .background(Color(0xFFE0F7FA), RoundedCornerShape(8.dp))
-                                .padding(8.dp)
-                        )
-                    }
-
-                    else -> {}
+            // Trạng thái loading hoặc thông báo lỗi
+            when (loginState) {
+                CustomerState.Login.Idle -> {}
+                CustomerState.Login.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.size(40.dp))
                 }
+
+                is CustomerState.Login.Error -> {
+                    Text(
+                        text = "Lỗi: ${(loginState as CustomerState.Login.Error).message}",
+                        fontSize = 16.sp,
+                        color = Color.Red,
+                        modifier = Modifier
+                            .background(Color(0xFFFFE0E0), RoundedCornerShape(8.dp))
+                            .padding(8.dp)
+                    )
+                }
+
+                is CustomerState.Login.Success -> {
+                    Text(
+                        text = "Chào mừng, ${(loginState as CustomerState.Login.Success).response.name}!",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .background(Color(0xFFE0F7FA), RoundedCornerShape(8.dp))
+                            .padding(8.dp)
+                    )
+                }
+
+
             }
 
-            // Nút chuyển sang đăng nhập
             Spacer(modifier = Modifier.height(18.dp))
+
+            // Chuyển sang màn hình đăng ký
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Đã có tài khoản?", fontSize = 18.sp, color = Color.Gray)
-                TextButton(onClick = onLoginRequest) {
-                    Text(
-                        "Đăng nhập ngay",
-                        fontSize = 18.sp
-                    )
+                Text("Chưa có tài khoản?", fontSize = 16.sp, color = Color.Gray)
+                TextButton(onClick = onRegisterRequest) {
+                    Text("Đăng ký ngay", fontSize = 16.sp)
                 }
             }
         }
@@ -282,11 +275,11 @@ fun CustomerRegisterScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun CustomerRegisterScreenPreview() {
+private fun CustomerLoginScreenPreview() {
     ManageLaundryAppTheme {
-        CustomerRegisterScreen(
+        CustomerLoginScreen(
             viewModel = fakeViewModel<CustomerViewModel>(),
-            onLoginRequest = {}
-        )
+            onLoginSuccess = {},
+        ) {}
     }
 }

@@ -8,7 +8,7 @@ data class TrackOrderResponse(
     val orderId: Int,
     val shopName: String,
     val status: Order.Status,
-    val totalPrice: Int,
+    val totalPrice: Double,
     val specialInstructions: String?,
     val createdAt: String,
     val updatedAt: String

@@ -28,6 +28,7 @@ import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
 import com.example.manage.laundry.data.model.response.RegisterOwnerResponse
 import com.example.manage.laundry.data.model.response.RegisterStaffResponse
+import com.example.manage.laundry.data.model.response.ShopDetailResponse
 import com.example.manage.laundry.data.model.response.ShopOrderResponse
 import com.example.manage.laundry.data.model.response.ShopResponse
 import com.example.manage.laundry.data.model.response.ShopSearchResponse
@@ -39,7 +40,7 @@ import com.example.manage.laundry.di.repository.CustomerRepository
 import com.example.manage.laundry.di.repository.ShopOwnerRepository
 import com.example.manage.laundry.di.repository.StaffRepository
 import com.example.manage.laundry.di.repository.TestRepository
-import com.example.manage.laundry.viewmodel.CustomerViewModel
+import com.example.manage.laundry.ui.customer.CustomerViewModel
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import com.example.manage.laundry.viewmodel.StaffViewModel
 import com.example.manage.laundry.viewmodel.TestViewModel
@@ -133,7 +134,7 @@ private val customerRepository = object : CustomerRepository {
                     orderId,
                     "Tiệm Giặt ABC",
                     Order.Status.COMPLETED,
-                    50000,
+                    50000.0,
                     "Giao trước 6h",
                     String.now(),
                     String.now()
@@ -145,11 +146,15 @@ private val customerRepository = object : CustomerRepository {
             data =
                 CreateOrderResponse(
                     orderId = 1,
-                    totalPrice = 5,
+                    totalPrice = 5.0,
                     status = "sdlk",
                     createdAt = "L",
                 )
         )
+    }
+
+    override suspend fun getShopDetails(shopId: Int): ApiResponse<ShopDetailResponse> {
+        return ApiResponse()
     }
 }
 
@@ -274,14 +279,14 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
                     ShopOrderResponse(
                         1,
                         "Nguyễn Văn A",
-                        50000,
+                        50000.0,
                         Order.Status.PENDING,
                         String.now()
                     ),
                     ShopOrderResponse(
                         2,
                         "Trần Thị B",
-                        70000,
+                        70000.0,
                         Order.Status.CONFIRMED,
                         String.now()
                     )
@@ -298,7 +303,7 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
                     orderId,
                     "Tiệm Giặt ABC",
                     "Nguyễn Văn A",
-                    50000,
+                    50000.0,
                     request.status,
                     request.specialInstructions,
                     String.now()
@@ -322,7 +327,7 @@ private val staffRepository = object : StaffRepository {
                         1,
                         "Tiệm Giặt ABC",
                         "Nguyễn Văn A",
-                        50000,
+                        50000.0,
                         Order.Status.PENDING,
                         null,
                         String.now()
@@ -331,7 +336,7 @@ private val staffRepository = object : StaffRepository {
                         2,
                         "Tiệm Giặt ABC",
                         "Trần Thị B",
-                        70000,
+                        70000.0,
                         Order.Status.PROCESSING,
                         "Gấp gáp",
                         String.now()
@@ -348,7 +353,7 @@ private val staffRepository = object : StaffRepository {
                 orderId,
                 "Tiệm Giặt ABC",
                 "Nguyễn Văn A",
-                50000,
+                50000.0,
                 Order.Status.valueOf(request.status),
                 null,
                 String.now()

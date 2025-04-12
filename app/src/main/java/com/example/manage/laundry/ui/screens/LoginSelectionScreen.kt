@@ -36,9 +36,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LoginSelectionScreen(
-    onShopOwnerLoginRequest: () -> Unit = {},
-    onStaffLoginRequest: () -> Unit = {},
-    onCustomerLoginRequest: () -> Unit = {}
+    onShopOwnerLoginRequest: () -> Unit,
+    onStaffLoginRequest: () -> Unit,
+    onCustomerLoginRequest: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -148,6 +148,10 @@ fun RoleSelectionCard(
 @Composable
 private fun LoginSelectionScreenPreview() {
     ManageLaundryAppTheme {
-        LoginSelectionScreen()
+        LoginSelectionScreen(
+            onShopOwnerLoginRequest = { TODO() },
+            onStaffLoginRequest = { TODO() },
+            onCustomerLoginRequest = { TODO() }
+        )
     }
 }

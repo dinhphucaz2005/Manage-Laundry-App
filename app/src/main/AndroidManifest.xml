@@ -18,6 +18,10 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.customer.CustomerActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ManageLaundryApp" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ManageLaundryApp">
@@ -26,6 +30,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
     </application>
 

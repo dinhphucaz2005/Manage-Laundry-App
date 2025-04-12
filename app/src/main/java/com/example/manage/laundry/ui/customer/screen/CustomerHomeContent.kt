@@ -1,4 +1,4 @@
-package com.example.manage.laundry.ui.customer
+package com.example.manage.laundry.ui.customer.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -51,17 +51,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.manage.laundry.R
-import com.example.manage.laundry.viewmodel.CustomerState
-import com.example.manage.laundry.viewmodel.CustomerViewModel
+import com.example.manage.laundry.ui.customer.CustomerState
+import com.example.manage.laundry.ui.customer.CustomerViewModel
 
 @Composable
-fun CustomerHomeContent(viewModel: CustomerViewModel) {
+fun CustomerHomeContent(
+    customerViewModel: CustomerViewModel,
+    onNavigateToShopDetail: (Int) -> Unit
+) {
 
     LaunchedEffect(Unit) {
-        viewModel.searchShops()
+        customerViewModel.searchShops()
     }
 
-    val shopSearchState by viewModel.shopSearchState.collectAsStateWithLifecycle()
+    val shopSearchState by customerViewModel.shopSearchState.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -180,14 +183,13 @@ fun CustomerHomeContent(viewModel: CustomerViewModel) {
                         key = { _, item -> item.shopId }) { _, item ->
                         ShopCard(
                             shop = ShopItem(
+                                id = item.shopId,
                                 name = item.name,
                                 distance = "${item.location.length} km",
                                 rating = item.averageRating.toFloat(),
                                 hours = "Mở cửa: ${item.openTime}"
                             ),
-                            onClick = {
-                                // Handle shop click
-                            }
+                            onClick = onNavigateToShopDetail
                         )
                     }
                 }
@@ -199,6 +201,7 @@ fun CustomerHomeContent(viewModel: CustomerViewModel) {
 }
 
 data class ShopItem(
+    val id: Int,
     val name: String,
     val distance: String,
     val rating: Float,
@@ -206,11 +209,11 @@ data class ShopItem(
 )
 
 @Composable
-fun ShopCard(shop: ShopItem, onClick: () -> Unit) {
+fun ShopCard(shop: ShopItem, onClick: (shopId: Int) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .clickable(onClick = { onClick(shop.id) }),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

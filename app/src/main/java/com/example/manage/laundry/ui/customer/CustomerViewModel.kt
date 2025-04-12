@@ -1,9 +1,18 @@
-package com.example.manage.laundry.viewmodel
+package com.example.manage.laundry.ui.customer
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.manage.laundry.data.model.request.*
-import com.example.manage.laundry.data.model.response.*
+import com.example.manage.laundry.data.model.request.CreateOrderRequest
+import com.example.manage.laundry.data.model.request.CustomerLoginRequest
+import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
+import com.example.manage.laundry.data.model.response.CreateOrderResponse
+import com.example.manage.laundry.data.model.response.CustomerLoginResponse
+import com.example.manage.laundry.data.model.response.OrderHistoryResponse
+import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
+import com.example.manage.laundry.data.model.response.ShopDetailResponse
+import com.example.manage.laundry.data.model.response.ShopSearchResponse
+import com.example.manage.laundry.data.model.response.TrackOrderResponse
 import com.example.manage.laundry.di.repository.CustomerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +35,10 @@ class CustomerViewModel @Inject constructor(
     private val _shopSearchState =
         MutableStateFlow<CustomerState.ShopSearch>(CustomerState.ShopSearch.Idle)
     val shopSearchState: StateFlow<CustomerState.ShopSearch> = _shopSearchState
+
+    private val _shopDetailState =
+        MutableStateFlow<CustomerState.ShopDetail>(CustomerState.ShopDetail.Idle)
+    val shopDetailState: StateFlow<CustomerState.ShopDetail> = _shopDetailState
 
 
     private val _createOrderState =
@@ -74,9 +87,102 @@ class CustomerViewModel @Inject constructor(
         }
     }
 
-    fun createOrder(request: CreateOrderRequest) {
+
+    fun createOrder() {
         viewModelScope.launch {
+            _createOrderState.value = CustomerState.CreateOrder.Loading
+            try {
+                val orderRequests = _orderRequests.value
+                if (orderRequests.isEmpty()) {
+                    _createOrderState.value =
+                        CustomerState.CreateOrder.Error("Giỏ hàng trống")
+                    return@launch
+                }
+                val orderRequest = orderRequests[0].copy(
+                    items = orderRequests.map {
+                        CreateOrderRequest.Item(
+                            serviceId = it.items[0].serviceId,
+                            quantity = it.items[0].quantity
+                        )
+                    }
+                )
+                val response = repository.createOrder(orderRequest)
+                _createOrderState.value = if (response.success && response.data != null) {
+                    CustomerState.CreateOrder.Success(response.data)
+                } else {
+                    CustomerState.CreateOrder.Error(response.message)
+                }
+            } catch (e: Exception) {
+                _createOrderState.value =
+                    CustomerState.CreateOrder.Error(e.message ?: "Lỗi không xác định")
+            }
         }
+    }
+
+    private val _orderRequests =
+        MutableStateFlow<MutableList<CreateOrderRequest>>(mutableStateListOf())
+
+    fun addToCart(orderRequest: CreateOrderRequest): String {
+        _createOrderState.value = CustomerState.CreateOrder.Idle
+        // Check if cart contains items from another shop
+        if (_orderRequests.value.isNotEmpty() && _orderRequests.value.any { it.shopId != orderRequest.shopId }) {
+            return "Giỏ hàng chỉ chứa sản phẩm từ một cửa hàng"
+        }
+
+        // Add item to cart
+        val currentCart = _orderRequests.value.toMutableList()
+        currentCart.add(orderRequest)
+        _orderRequests.value = currentCart
+
+        return "Thêm vào giỏ hàng thành công"
+    }
+
+    data class CartItem(
+        val serviceId: Int,
+        val serviceName: String,
+        val price: Double,
+        val quantity: Int,
+        val specialInstructions: String? = null
+    )
+
+    fun getCartItems(): List<CartItem> {
+        val result = mutableListOf<CartItem>()
+        val shopDetailState = _shopDetailState.value
+
+        if (shopDetailState is CustomerState.ShopDetail.Success) {
+            val shop = shopDetailState.shop
+
+            _orderRequests.value.forEach { orderRequest ->
+                orderRequest.items.forEach { item ->
+                    val service = shop.services.find { it.id == item.serviceId }
+                    service?.let {
+                        result.add(
+                            CartItem(
+                                serviceId = it.id,
+                                serviceName = it.name,
+                                price = it.price,
+                                quantity = item.quantity,
+                                specialInstructions = orderRequest.specialInstructions
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        return result
+    }
+
+    fun getCartItemCount(): Int {
+        return _orderRequests.value.sumOf { order -> order.items.sumOf { it.quantity } }
+    }
+
+    fun getCartTotal(): Double {
+        return getCartItems().sumOf { it.price * it.quantity }
+    }
+
+    fun clearCart() {
+        _orderRequests.value = mutableStateListOf()
     }
 
     fun searchShops() {
@@ -129,6 +235,24 @@ class CustomerViewModel @Inject constructor(
             }
         }
     }
+
+    fun getShopDetails(shopId: Int) {
+        viewModelScope.launch {
+            _shopDetailState.value = CustomerState.ShopDetail.Loading
+            try {
+                val response = repository.getShopDetails(shopId)
+                _shopDetailState.value = if (response.success && response.data != null) {
+                    CustomerState.ShopDetail.Success(response.data)
+                } else {
+                    CustomerState.ShopDetail.Error(response.message)
+                }
+            } catch (e: Exception) {
+                _shopDetailState.value =
+                    CustomerState.ShopDetail.Error(e.message ?: "Lỗi không xác định")
+            }
+        }
+    }
+
 }
 
 sealed class CustomerState {
@@ -155,10 +279,17 @@ sealed class CustomerState {
         data class Error(val message: String) : ShopSearch()
     }
 
+    sealed class ShopDetail : CustomerState() {
+        data object Idle : ShopDetail()
+        data object Loading : ShopDetail()
+        data class Success(val shop: ShopDetailResponse) : ShopDetail()
+        data class Error(val message: String) : ShopDetail()
+    }
+
     sealed class CreateOrder : CustomerState() {
         data object Idle : CreateOrder()
         data object Loading : CreateOrder()
-        data class Success(val orders: List<CreateOrderResponse>) : CreateOrder()
+        data class Success(val orders: CreateOrderResponse?) : CreateOrder()
         data class Error(val message: String) : CreateOrder()
     }
 

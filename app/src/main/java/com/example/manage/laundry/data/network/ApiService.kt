@@ -21,6 +21,7 @@ import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
 import com.example.manage.laundry.data.model.response.RegisterOwnerResponse
 import com.example.manage.laundry.data.model.response.RegisterStaffResponse
+import com.example.manage.laundry.data.model.response.ShopDetailResponse
 import com.example.manage.laundry.data.model.response.ShopOrderResponse
 import com.example.manage.laundry.data.model.response.ShopSearchResponse
 import com.example.manage.laundry.data.model.response.ShopServiceResponse
@@ -28,7 +29,7 @@ import com.example.manage.laundry.data.model.response.StaffLoginResponse
 import com.example.manage.laundry.data.model.response.TrackOrderResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
@@ -37,7 +38,6 @@ import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.http.append
 import io.ktor.http.contentType
 
 
@@ -156,10 +156,17 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
 
     suspend fun createOrder(createOrderRequest: CreateOrderRequest): ApiResponse<CreateOrderResponse> =
         client.post("$baseUrl/customers/orders") {
-            headers {
-                append(HttpHeaders.Authorization, "Bearer $token")
-            }
+            contentType(ContentType.Application.Json)
+            addAuthorization()
             setBody(createOrderRequest)
         }.body()
+
+    suspend fun getShopDetails(shopId: Int): ApiResponse<ShopDetailResponse> =
+        client.get("$baseUrl/owners/shops/$shopId").body()
+
+
+    private fun HttpRequestBuilder.addAuthorization() {
+        headers.append(HttpHeaders.Authorization, "Bearer $token")
+    }
 
 }
