@@ -28,7 +28,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(
     modifier: Modifier = Modifier,
-    onNavigate: () -> Unit = {}
+    onNavigate: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -70,6 +70,6 @@ fun SplashScreen(
 @Composable
 private fun SplashScreenPreview() {
     ManageLaundryAppTheme {
-        SplashScreen()
+        SplashScreen(onNavigate = {})
     }
 }

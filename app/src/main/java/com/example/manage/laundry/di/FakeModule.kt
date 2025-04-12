@@ -39,12 +39,9 @@ import com.example.manage.laundry.data.model.response.UserResponse
 import com.example.manage.laundry.di.repository.CustomerRepository
 import com.example.manage.laundry.di.repository.ShopOwnerRepository
 import com.example.manage.laundry.di.repository.StaffRepository
-import com.example.manage.laundry.di.repository.TestRepository
 import com.example.manage.laundry.ui.customer.CustomerViewModel
 import com.example.manage.laundry.ui.staff.StaffViewModel
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
-import com.example.manage.laundry.viewmodel.TestViewModel
-import kotlinx.coroutines.delay
 import java.time.LocalDate
 
 private val customerRepository = object : CustomerRepository {
@@ -311,7 +308,24 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
         )
 
     override suspend fun getServices(shopId: Int): ApiResponse<List<ShopServiceResponse>> {
-        TODO("Not yet implemented")
+        return ApiResponse(
+            data = listOf(
+                ShopServiceResponse(
+                    1,
+                    "Giặt sấy",
+                    "Giặt và sấy quần áo",
+                    50000.0,
+                    shopId
+                ),
+                ShopServiceResponse(
+                    2,
+                    "Giặt ủi",
+                    "Giặt và ủi quần áo",
+                    70000.0,
+                    shopId
+                )
+            )
+        )
     }
 }
 
@@ -350,12 +364,6 @@ private val staffRepository = object : StaffRepository {
     ): ApiResponse<Nothing> = ApiResponse(success = true, "Cập nhật trạng thái đơn hàng thành công")
 }
 
-private val testRepository = object : TestRepository {
-    override suspend fun test(): String {
-        delay(2000)
-        return "Hello from FakeRepository"
-    }
-}
 
 private fun String.Companion.now(): String =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) LocalDate.now().toString() else "2025-03-07"
@@ -367,8 +375,6 @@ fun provideFakeShopOwnerViewModel() = ShopOwnerViewModel(shopOwnerRepository)
 
 fun provideFakeStaffViewModel() = StaffViewModel(staffRepository)
 
-fun provideFakeTestViewModel() = TestViewModel(testRepository)
-
 
 @Composable
 inline fun <reified T : ViewModel> fakeViewModel(): T {
@@ -378,7 +384,6 @@ inline fun <reified T : ViewModel> fakeViewModel(): T {
             CustomerViewModel::class -> provideFakeCustomerViewModel() as T
             ShopOwnerViewModel::class -> provideFakeShopOwnerViewModel() as T
             StaffViewModel::class -> provideFakeStaffViewModel() as T
-            TestViewModel::class -> provideFakeTestViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${T::class.simpleName}")
         }
     } else {
