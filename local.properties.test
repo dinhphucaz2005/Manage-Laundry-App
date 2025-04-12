@@ -1,9 +1,6 @@
-## This file must *NOT* be checked into Version Control Systems,
-# as it contains information specific to your local configuration.
-#
-# Location of the SDK. This is only used by Gradle.
-# For customization when using a Version Control System, please read the
-# header note.
-#Sat Mar 15 15:14:33 ICT 2025
-sdk.dir=/home/phuc/Android/Sdk
-NETWORK_IP=192.168.0.106
+sdk.dir=C\:\\Users\\hh\\AppData\\Local\\Android\\Sdk
+NETWORK_IP=192.168.1.13
+KEYSTORE_PASSWORD=random
+KEY_PASSWORD=random
+KEY_ALIAS=random
+KEYSTORE_PATH=random.jks

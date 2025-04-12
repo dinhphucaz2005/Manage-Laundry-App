@@ -40,6 +40,15 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(project.findProperty("KEYSTORE_FILE") as? String ?: "random.jks")
+            storePassword = project.findProperty("KEYSTORE_PASSWORD") as? String ?: "random"
+            keyAlias = project.findProperty("KEY_ALIAS") as? String ?: "random"
+            keyPassword = project.findProperty("KEY_PASSWORD") as? String ?: "random"
+        }
+    }
+
     buildTypes {
         debug {
             buildConfigField("String", "IP_ADDRESS", "\"$networkIp\"")
@@ -75,7 +84,8 @@ android {
             // Customer
             buildConfigField("String", "DUMMY_CUSTOMER_EMAIL", "\"\"")
             buildConfigField("String", "DUMMY_CUSTOMER_PASSWORD", "\"\"")
-            signingConfig = signingConfigs.getByName("debug")
+//            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
