@@ -68,19 +68,15 @@ fun TrackingStepsView(status: String) {
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-        }
-
-        mainSteps.forEachIndexed { index, step ->
-            Column {
-                StepIndicator(
-                    label = step.getStringTrackingStepsView(),
-                    isCompleted = if (isErrorState) {
-                        index < currentStepIndex
-                    } else {
-                        index <= currentStepIndex
-                    },
-                    isActive = index == currentStepIndex,
-                )
+        } else {
+            mainSteps.forEachIndexed { index, step ->
+                Column {
+                    StepIndicator(
+                        label = step.getStringTrackingStepsView(),
+                        isCompleted = index <= currentStepIndex,
+                        isActive = index == currentStepIndex,
+                    )
+                }
             }
         }
     }

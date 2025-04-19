@@ -126,8 +126,6 @@ fun StaffScreen(
                     0 -> StaffHomeScreen(staffViewModel = staffViewModel)
                     1 -> Placeholder()
                     2 -> Placeholder()
-                    3 -> Placeholder()
-                    4 -> Placeholder()
                 }
             }
         }

@@ -36,13 +36,6 @@ import androidx.compose.ui.unit.dp
 import com.example.manage.laundry.data.model.request.Order
 import com.example.manage.laundry.data.model.response.OrderResponse
 
-@Composable
-fun PreCheckAndQuoteBottomSheet(
-    modifier: Modifier = Modifier,
-    order: OrderResponse
-) {
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderStatusBottomSheet(
@@ -53,6 +46,8 @@ fun OrderStatusBottomSheet(
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedStatus by remember { mutableStateOf(order.status) }
+
+    val availableStatuses = Order.Status.getAvailableStatuses(order.status)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -108,7 +103,7 @@ fun OrderStatusBottomSheet(
                     onDismissRequest = { expanded = false },
                     modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
-                    Order.Status.entries.forEach { status ->
+                    availableStatuses.forEach { status ->
                         DropdownMenuItem(
                             text = { Text(status.name, color = status.getColor()) },
                             onClick = {

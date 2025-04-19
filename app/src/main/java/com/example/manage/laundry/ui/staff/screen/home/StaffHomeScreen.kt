@@ -208,7 +208,10 @@ fun StaffHomeScreen(
                     onDismiss = { showBottomSheet = false },
                     onStatusUpdate = {
                         showBottomSheet = false
-                        TODO()
+                        staffViewModel.updateOrderStatus(
+                            orderId = order.id,
+                            status = it
+                        )
                     }
                 )
             }

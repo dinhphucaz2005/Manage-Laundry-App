@@ -20,11 +20,25 @@ class Order {
             return when (this) {
                 NEW -> "Mới"
                 PENDING -> "Chờ xử lý"
+                PROCESSING -> "Đang xử xác nhận"
+                COMPLETED -> "Hoàn thành"
+                DELIVERED -> "Đã giao"
+                PAID -> "Đã thanh toán"
+                PAID_FAILED -> "Thanh toán thất bại"
+                CANCELED -> "Đã hủy"
+            }
+        }
+
+        fun getStringStatusChip(): String {
+            return when (this) {
+                NEW -> "Mới tạo đơn"
+                PENDING -> "Đang chờ xác nhận"
                 PROCESSING -> "Đang xử lý"
                 COMPLETED -> "Hoàn thành"
                 DELIVERED -> "Đã giao"
                 PAID -> "Đã thanh toán"
-                else -> "Không xác định"
+                PAID_FAILED -> "Thanh toán thất bại"
+                CANCELED -> "Đã hủy"
             }
         }
 
@@ -38,6 +52,21 @@ class Order {
             DELIVERED -> MaterialTheme.colorScheme.surfaceTint
             PAID -> MaterialTheme.colorScheme.surfaceTint.copy(green = 0.8f)
             PAID_FAILED -> MaterialTheme.colorScheme.error.copy(alpha = 0.6f)
+        }
+
+        companion object {
+            fun getAvailableStatuses(status: Status): List<Status> {
+                return when (status) {
+                    NEW -> emptyList()
+                    PENDING -> listOf(CANCELED)
+                    PROCESSING -> listOf(DELIVERED, CANCELED)
+                    DELIVERED -> listOf(COMPLETED, CANCELED)
+                    COMPLETED -> emptyList()
+                    PAID -> emptyList()
+                    PAID_FAILED -> emptyList()
+                    CANCELED -> emptyList()
+                }
+            }
         }
 
     }

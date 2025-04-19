@@ -48,6 +48,9 @@ fun OrderCard(
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = order.status.getColor()
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -58,12 +61,13 @@ fun OrderCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
+                    color = MaterialTheme.colorScheme.onPrimary,
                     text = "Đơn hàng #${order.id}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
 
-                StatusChip(status = order.status.getStringTrackingStepsView())
+                StatusChip(status = order.status)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -75,6 +79,7 @@ fun OrderCard(
             ) {
                 Text(
                     text = order.shopName,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.bodyLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -92,6 +97,7 @@ fun OrderCard(
                     text = "Tạm tính: ",
                     style = MaterialTheme.typography.bodyLarge,
                     maxLines = 1,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
@@ -99,7 +105,7 @@ fun OrderCard(
                 Text(
                     text = order.estimatePriceString,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -112,6 +118,7 @@ fun OrderCard(
                 Text(
                     text = "Tổng tiền: ",
                     style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
@@ -120,7 +127,7 @@ fun OrderCard(
                 Text(
                     text = order.totalPriceString,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -131,7 +138,7 @@ fun OrderCard(
             Text(
                 text = "Ngày đặt: ${order.createdAtString}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }
