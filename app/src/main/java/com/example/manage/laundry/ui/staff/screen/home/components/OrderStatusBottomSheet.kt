@@ -36,6 +36,10 @@ import androidx.compose.ui.unit.dp
 import com.example.manage.laundry.data.model.request.Order
 import com.example.manage.laundry.data.model.response.OrderResponse
 
+@Composable
+fun PreCheckAndQuoteBottomSheet(modifier: Modifier = Modifier,
+                                order: OrderResponse) {
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderStatusBottomSheet(

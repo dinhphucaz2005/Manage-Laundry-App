@@ -10,9 +10,9 @@ interface CustomerRepository {
 
     suspend fun searchShops(): ApiResponse<List<ShopSearchResponse>>
 
-    suspend fun getOrderHistory(): ApiResponse<List<OrderHistoryResponse>>
+    suspend fun getOrderHistory(): ApiResponse<List<OrderResponse>>
 
-    suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse>
+    suspend fun trackOrder(orderId: Int): ApiResponse<OrderResponse>
 
     suspend fun createOrder(request: CreateOrderRequest): ApiResponse<CreateOrderResponse>
 

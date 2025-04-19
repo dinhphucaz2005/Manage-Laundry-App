@@ -1,20 +1,52 @@
 package com.example.manage.laundry.data.model.response
 
+import android.annotation.SuppressLint
 import com.example.manage.laundry.data.model.request.Order
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class OrderResponse(
     val id: Int,
-    val shopName: String,
-    val customerName: String,
-    val totalPrice: Double,
-    val status: Order.Status,
-    val specialInstructions: String?,
-    val createdAt: String
+    val shopName: String = "",
+    val customerName: String? = null,
+    private val estimatePrice: Int,
+    private val totalPrice: Int? = null,
+    val status: Order.Status = Order.Status.PENDING,
+    val specialInstructions: String? = null,
+    private val createdAt: String? = null,
+    private val updatedAt: String? = null,
+    val items: List<OrderItemResponse> = emptyList()
 ) {
-    fun getCreateAtString(): String {
-        val regex = Regex("""(\d{4})-(\d{2})-(\d{2})T(\d{2}:\d{2}:\d{2})(?:\.\d+)?""")
-        return regex.replace(createdAt, "$4 $3-$2-$1")
-    }
+
+    val estimatePriceString: String
+        @SuppressLint("DefaultLocale")
+        get() = String.format("%,.0fđ", estimatePrice.toFloat())
+
+    val totalPriceString: String
+        @SuppressLint("DefaultLocale")
+        get() = totalPrice?.let { String.format("%,.0fđ", it.toFloat()) } ?: "Không có thông tin"
+
+
+    val createdAtString: String
+        get() = createdAt?.let {
+            val date = it.split("T").first()
+            val time = it.split("T").last().split(".").first()
+            "$date $time"
+        } ?: "Không có thông tin"
+
+    val updatedAtString: String
+        get() = updatedAt?.let {
+            val date = it.split("T").first()
+            val time = it.split("T").last().split(".").first()
+            "$date $time"
+        } ?: "Không có thông tin"
+
+    @Serializable
+    data class OrderItemResponse(
+        val id: Int,
+        val name: String,
+        val quantity: Int,
+        val price: Int,
+        val totalPrice: Int
+    )
 }

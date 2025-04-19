@@ -16,13 +16,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.manage.laundry.data.model.response.OrderHistoryResponse
+import com.example.manage.laundry.data.model.request.Order
+import com.example.manage.laundry.data.model.response.OrderResponse
+import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 
+@Preview
+@Composable
+private fun OrderCardPreview() {
+    ManageLaundryAppTheme {
+        OrderCard(
+            order = OrderResponse(
+                id = 1,
+                shopName = "Shop Name",
+                totalPrice = 100000,
+                status = Order.Status.PENDING,
+                createdAt = "2023-10-01T12:00:00Z",
+                estimatePrice = 0,
+            ),
+            onClick = {}
+        )
+    }
+}
 
 @Composable
 fun OrderCard(
-    order: OrderHistoryResponse,
+    order: OrderResponse,
     onClick: () -> Unit
 ) {
     Card(
@@ -38,12 +58,12 @@ fun OrderCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Đơn hàng #${order.orderId}",
+                    text = "Đơn hàng #${order.id}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
 
-                StatusChip(status = order.status)
+                StatusChip(status = order.status.getString())
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -60,19 +80,56 @@ fun OrderCard(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
+            }
+
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Tạm tính: ",
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
 
                 Text(
-                    text = "${order.totalPrice}đ",
+                    text = order.estimatePriceString,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             }
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Tổng tiền: ",
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Text(
+                    text = order.totalPriceString,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Ngày đặt: ${order.getCreateAtString()}",
+                text = "Ngày đặt: ${order.createdAtString}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

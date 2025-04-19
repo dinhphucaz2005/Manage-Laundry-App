@@ -27,6 +27,8 @@ class Order {
             PAID -> MaterialTheme.colorScheme.surfaceTint.copy(green = 0.8f)
             PAID_FAILED -> MaterialTheme.colorScheme.error.copy(alpha = 0.6f)
         }
+
+        fun getString(): String = name
     }
 }
 

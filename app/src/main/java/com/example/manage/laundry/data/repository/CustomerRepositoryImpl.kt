@@ -6,11 +6,10 @@ import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
 import com.example.manage.laundry.data.model.response.ApiResponse
 import com.example.manage.laundry.data.model.response.CreateOrderResponse
 import com.example.manage.laundry.data.model.response.CustomerLoginResponse
-import com.example.manage.laundry.data.model.response.OrderHistoryResponse
+import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
 import com.example.manage.laundry.data.model.response.ShopDetailResponse
 import com.example.manage.laundry.data.model.response.ShopSearchResponse
-import com.example.manage.laundry.data.model.response.TrackOrderResponse
 import com.example.manage.laundry.data.network.ApiService
 import com.example.manage.laundry.di.repository.CustomerRepository
 
@@ -31,10 +30,10 @@ class CustomerRepositoryImpl(
     override suspend fun searchShops(): ApiResponse<List<ShopSearchResponse>> =
         apiService.searchShops()
 
-    override suspend fun getOrderHistory(): ApiResponse<List<OrderHistoryResponse>> =
+    override suspend fun getOrderHistory(): ApiResponse<List<OrderResponse>> =
         apiService.getOrderHistory()
 
-    override suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse> =
+    override suspend fun trackOrder(orderId: Int): ApiResponse<OrderResponse> =
         apiService.trackOrder(orderId)
 
     override suspend fun createOrder(request: CreateOrderRequest): ApiResponse<CreateOrderResponse> =

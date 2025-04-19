@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class ShopOrderResponse(
     val orderId: Int,
     val customerName: String,
-    val totalPrice: Double,
+    val totalPrice: Int,
     val status: Order.Status,
     val createdAt: String
 )

@@ -17,10 +17,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.manage.laundry.data.model.response.OrderResponse
+import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import com.example.manage.laundry.utils.formatCurrency
 
+@Preview
+@Composable
+private fun OrderCardPreview() {
+    ManageLaundryAppTheme {
+    }
+}
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -28,7 +36,6 @@ fun OrderCard(
     order: OrderResponse,
     onUpdateClick: () -> Unit
 ) {
-    val context = LocalContext.current
 
     Card(
         modifier = Modifier
@@ -59,14 +66,9 @@ fun OrderCard(
 
             Text("Khách hàng: ${order.customerName}")
             Text(
-                "Tổng tiền: ${
-                    formatCurrency(
-                        context = context,
-                        amount = order.totalPrice,
-                    )
-                }"
+                "Tạm tính${order.estimatePriceString}"
             )
-            Text("Date: ${order.getCreateAtString()}")
+            Text("Date: ${order.createdAtString}")
 
             if (!order.specialInstructions.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))

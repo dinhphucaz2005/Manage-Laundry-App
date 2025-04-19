@@ -165,7 +165,11 @@ fun CustomerHomeContent(
 
         when (val result = shopSearchState) {
             is CustomerState.ShopSearch.Error -> {
-                TODO()
+                Text(
+                    text = result.message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
 
             CustomerState.ShopSearch.Idle -> CircularProgressIndicator()

@@ -8,12 +8,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.manage.laundry.data.model.response.OrderHistoryResponse
+import com.example.manage.laundry.data.model.response.OrderResponse
 
 
 @Composable
 fun OrdersList(
-    orders: List<OrderHistoryResponse>,
+    orders: List<OrderResponse>,
     onOrderClick: (Int) -> Unit
 ) {
     LazyColumn(
@@ -22,7 +22,7 @@ fun OrdersList(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(orders) { order ->
-            OrderCard(order = order, onClick = { onOrderClick(order.orderId) })
+            OrderCard(order = order, onClick = { onOrderClick(order.id) })
         }
     }
 }

@@ -8,11 +8,10 @@ import com.example.manage.laundry.data.model.request.CustomerLoginRequest
 import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
 import com.example.manage.laundry.data.model.response.CreateOrderResponse
 import com.example.manage.laundry.data.model.response.CustomerLoginResponse
-import com.example.manage.laundry.data.model.response.OrderHistoryResponse
+import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
 import com.example.manage.laundry.data.model.response.ShopDetailResponse
 import com.example.manage.laundry.data.model.response.ShopSearchResponse
-import com.example.manage.laundry.data.model.response.TrackOrderResponse
 import com.example.manage.laundry.di.repository.CustomerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -140,7 +139,7 @@ class CustomerViewModel @Inject constructor(
     data class CartItem(
         val serviceId: Int,
         val serviceName: String,
-        val price: Double,
+        val price: Int,
         val quantity: Int,
         val specialInstructions: String? = null
     )
@@ -177,7 +176,7 @@ class CustomerViewModel @Inject constructor(
         return _orderRequests.value.sumOf { order -> order.items.sumOf { it.quantity } }
     }
 
-    fun getCartTotal(): Double {
+    fun getCartTotal(): Int {
         return getCartItems().sumOf { it.price * it.quantity }
     }
 
@@ -296,14 +295,14 @@ sealed class CustomerState {
     sealed class OrderHistory : CustomerState() {
         data object Idle : OrderHistory()
         data object Loading : OrderHistory()
-        data class Success(val orders: List<OrderHistoryResponse>) : OrderHistory()
+        data class Success(val orders: List<OrderResponse>) : OrderHistory()
         data class Error(val message: String) : OrderHistory()
     }
 
     sealed class TrackOrder : CustomerState() {
         data object Idle : TrackOrder()
         data object Loading : TrackOrder()
-        data class Success(val order: TrackOrderResponse) : TrackOrder()
+        data class Success(val order: OrderResponse) : TrackOrder()
         data class Error(val message: String) : TrackOrder()
     }
 }

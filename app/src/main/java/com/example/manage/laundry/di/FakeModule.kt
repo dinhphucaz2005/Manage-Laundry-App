@@ -23,7 +23,6 @@ import com.example.manage.laundry.data.model.response.CreateOrderResponse
 import com.example.manage.laundry.data.model.response.CustomerLoginResponse
 import com.example.manage.laundry.data.model.response.GetStaffsResponse
 import com.example.manage.laundry.data.model.response.LoginResponse
-import com.example.manage.laundry.data.model.response.OrderHistoryResponse
 import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
 import com.example.manage.laundry.data.model.response.RegisterOwnerResponse
@@ -34,7 +33,6 @@ import com.example.manage.laundry.data.model.response.ShopResponse
 import com.example.manage.laundry.data.model.response.ShopSearchResponse
 import com.example.manage.laundry.data.model.response.ShopServiceResponse
 import com.example.manage.laundry.data.model.response.StaffLoginResponse
-import com.example.manage.laundry.data.model.response.TrackOrderResponse
 import com.example.manage.laundry.data.model.response.UserResponse
 import com.example.manage.laundry.di.repository.CustomerRepository
 import com.example.manage.laundry.di.repository.ShopOwnerRepository
@@ -96,45 +94,36 @@ private val customerRepository = object : CustomerRepository {
                         "Giặt ủi cao cấp",
                         "07:00",
                         "22:00",
-                        4.0
+                        4.5
                     )
                 )
         )
 
-    override suspend fun getOrderHistory(): ApiResponse<List<OrderHistoryResponse>> =
+    override suspend fun getOrderHistory(): ApiResponse<List<OrderResponse>> =
+        ApiResponse(data = emptyList())
+
+    override suspend fun trackOrder(orderId: Int): ApiResponse<OrderResponse> =
         ApiResponse(
             data =
-                listOf(
-                    OrderHistoryResponse(
-                        1,
-                        "Tiệm Giặt ABC",
-                        50000.0,
-                        "COMPLETED",
-                        String.now(),
-                        String.now()
+                OrderResponse(
+                    id = orderId,
+                    shopName = "Tiệm Giặt ABC",
+                    customerName = "Nguyễn Văn A",
+                    estimatePrice = 50000,
+                    status = Order.Status.PENDING,
+                    totalPrice = null,
+                    createdAt = String.now(),
+                    items = listOf(
+                        OrderResponse.OrderItemResponse(
+                            id = 1,
+                            name = "Giặt sấy",
+                            quantity = 2,
+                            price = 25000,
+                            totalPrice = 50000
+                        )
                     ),
-                    OrderHistoryResponse(
-                        2,
-                        "Tiệm Giặt XYZ",
-                        70000.0,
-                        "PENDING",
-                        String.now(),
-                        String.now()
-                    )
-                )
-        )
-
-    override suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse> =
-        ApiResponse(
-            data =
-                TrackOrderResponse(
-                    orderId,
-                    "Tiệm Giặt ABC",
-                    Order.Status.COMPLETED,
-                    50000.0,
-                    "Giao trước 6h",
-                    String.now(),
-                    String.now()
+                    specialInstructions = null,
+                    updatedAt = String.now()
                 )
         )
 
@@ -143,7 +132,7 @@ private val customerRepository = object : CustomerRepository {
             data =
                 CreateOrderResponse(
                     orderId = 1,
-                    totalPrice = 5.0,
+                    totalPrice = 5,
                     status = "sdlk",
                     createdAt = "L",
                 )
@@ -163,13 +152,13 @@ private val customerRepository = object : CustomerRepository {
                         1,
                         "Giặt sấy",
                         "Giặt và sấy quần áo",
-                        50000.0,
+                        50000,
                     ),
                     ShopDetailResponse.ShopDetailServiceResponse(
                         2,
                         "Giặt ủi",
                         "Giặt và ủi quần áo",
-                        70000.0,
+                        70000
                     )
                 ),
             )
@@ -265,7 +254,7 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
                 1,
                 request.name,
                 request.description,
-                request.price.toDouble(),
+                request.price,
                 shopId
             )
         )
@@ -283,7 +272,7 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
                     serviceId,
                     request.name,
                     request.description,
-                    request.price.toDouble(),
+                    request.price,
                     1
                 )
         )
@@ -298,14 +287,14 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
                     ShopOrderResponse(
                         1,
                         "Nguyễn Văn A",
-                        50000.0,
+                        50000,
                         Order.Status.PENDING,
                         String.now()
                     ),
                     ShopOrderResponse(
                         2,
                         "Trần Thị B",
-                        70000.0,
+                        70000,
                         Order.Status.COMPLETED,
                         String.now()
                     )
@@ -319,13 +308,24 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
         ApiResponse(
             data =
                 OrderResponse(
-                    orderId,
-                    "Tiệm Giặt ABC",
-                    "Nguyễn Văn A",
-                    50000.0,
-                    request.status,
-                    request.specialInstructions,
-                    String.now()
+                    id = orderId,
+                    shopName = "Tiệm Giặt ABC",
+                    customerName = "Nguyễn Văn A",
+                    estimatePrice = 50000,
+                    totalPrice = null,
+                    status = Order.Status.COMPLETED,
+                    specialInstructions = null,
+                    createdAt = String.now(),
+                    items = listOf(
+                        OrderResponse.OrderItemResponse(
+                            id = 1,
+                            name = "Giặt sấy",
+                            quantity = 2,
+                            price = 25000,
+                            totalPrice = 50000
+                        )
+                    ),
+                    updatedAt = String.now()
                 )
         )
 
@@ -336,14 +336,14 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
                     1,
                     "Giặt sấy",
                     "Giặt và sấy quần áo",
-                    50000.0,
+                    50000,
                     shopId
                 ),
                 ShopServiceResponse(
                     2,
                     "Giặt ủi",
                     "Giặt và ủi quần áo",
-                    70000.0,
+                    70000,
                     shopId
                 )
             )
@@ -360,30 +360,27 @@ private val staffRepository = object : StaffRepository {
             data =
                 listOf(
                     OrderResponse(
-                        1,
-                        "Tiệm Giặt ABC",
-                        "Nguyễn Văn A",
-                        50000.0,
-                        Order.Status.PENDING,
-                        null,
-                        String.now()
+                        id = 1,
+                        shopName = "Tiệm Giặt ABC",
+                        createdAt = "Nguyễn Văn A",
+                        estimatePrice = 50000,
+                        totalPrice = 50000,
+                        status =
+                            Order.Status.PENDING,
+
+                        specialInstructions = null,
+                        customerName = "Nguyen Van B",
+                        items = emptyList(),
+                        updatedAt = String.now()
                     ),
-                    OrderResponse(
-                        2,
-                        "Tiệm Giặt ABC",
-                        "Trần Thị B",
-                        70000.0,
-                        Order.Status.PROCESSING,
-                        "Gấp gáp",
-                        String.now()
-                    )
                 )
         )
 
     override suspend fun updateOrderStatus(
         orderId: Int,
         request: UpdateOrderStatusRequest
-    ): ApiResponse<Nothing> = ApiResponse(success = true, "Cập nhật trạng thái đơn hàng thành công")
+    ): ApiResponse<Nothing> =
+        ApiResponse(success = true, "Cập nhật trạng thái đơn hàng thành công")
 }
 
 

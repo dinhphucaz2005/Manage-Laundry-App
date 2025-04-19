@@ -16,6 +16,6 @@ data class ShopDetailResponse(
         val id: Int,
         val name: String,
         val description: String,
-        val price: Double,
+        val price: Int,
     )
 }

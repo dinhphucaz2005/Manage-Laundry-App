@@ -4,6 +4,7 @@ import com.example.manage.laundry.data.model.request.CreateOrderRequest
 import com.example.manage.laundry.data.model.request.CreateServiceRequest
 import com.example.manage.laundry.data.model.request.CustomerLoginRequest
 import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
+import com.example.manage.laundry.data.model.request.Order
 import com.example.manage.laundry.data.model.request.OwnerLoginRequest
 import com.example.manage.laundry.data.model.request.ShopRegisterRequest
 import com.example.manage.laundry.data.model.request.StaffLoginRequest
@@ -16,7 +17,6 @@ import com.example.manage.laundry.data.model.response.CreateOrderResponse
 import com.example.manage.laundry.data.model.response.CustomerLoginResponse
 import com.example.manage.laundry.data.model.response.GetStaffsResponse
 import com.example.manage.laundry.data.model.response.LoginResponse
-import com.example.manage.laundry.data.model.response.OrderHistoryResponse
 import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
 import com.example.manage.laundry.data.model.response.RegisterOwnerResponse
@@ -26,13 +26,11 @@ import com.example.manage.laundry.data.model.response.ShopOrderResponse
 import com.example.manage.laundry.data.model.response.ShopSearchResponse
 import com.example.manage.laundry.data.model.response.ShopServiceResponse
 import com.example.manage.laundry.data.model.response.StaffLoginResponse
-import com.example.manage.laundry.data.model.response.TrackOrderResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
-import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
@@ -144,15 +142,15 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
     suspend fun searchShops(): ApiResponse<List<ShopSearchResponse>> =
         client.get("$baseUrl/customers/shops").body()
 
-    suspend fun getOrderHistory(): ApiResponse<List<OrderHistoryResponse>> =
+    suspend fun getOrderHistory(): ApiResponse<List<OrderResponse>> =
         client.get("$baseUrl/customers/orders") {
-            headers {
-                append(HttpHeaders.Authorization, "Bearer $token")
-            }
+            addAuthorization()
         }.body()
 
-    suspend fun trackOrder(orderId: Int): ApiResponse<TrackOrderResponse> =
-        client.get("$baseUrl/customers/orders/$orderId/track").body()
+    suspend fun trackOrder(orderId: Int): ApiResponse<OrderResponse> =
+        client.get("$baseUrl/customers/orders/$orderId/track") {
+            addAuthorization()
+        }.body()
 
     suspend fun getServices(shopId: Int): ApiResponse<List<ShopServiceResponse>> =
         client.get("$baseUrl/owners/shops/$shopId/services").body()
