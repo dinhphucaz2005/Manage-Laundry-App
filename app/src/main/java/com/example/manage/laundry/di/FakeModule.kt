@@ -284,7 +284,7 @@ private val shopOwnerRepository = object : ShopOwnerRepository {
                         2,
                         "Trần Thị B",
                         70000.0,
-                        Order.Status.CONFIRMED,
+                        Order.Status.COMPLETED,
                         String.now()
                     )
                 )

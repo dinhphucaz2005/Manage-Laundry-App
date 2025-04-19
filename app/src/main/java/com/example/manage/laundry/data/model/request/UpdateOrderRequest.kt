@@ -7,27 +7,27 @@ import kotlinx.serialization.Serializable
 @Serializable
 class Order {
     enum class Status {
-        PENDING,
-        CONFIRMED,
-        PROCESSING,
-        IN_PROGRESS,
-        READY_FOR_DELIVERY,
-        COMPLETED,
-        CANCELLED;
+        NEW, /*Khách vừa gửi đồ, chưa tính toán chi phí*/
+        PENDING, /*Đã báo giá cho khách, đang chờ khách đồng ý*/
+        CANCELED, /*Khách không đồng ý giá và hủy đơn*/
+        PROCESSING, /*Khách đã đồng ý, đơn hàng đang được giặt ủi*/
+        COMPLETED, /*Đồ đã giặt xong, sẵn sàng trả khách*/
+        DELIVERED, /*Khách đã nhận đồ nhưng chưa thanh toán*/
+        PAID, /*Khách đã trả tiền (tiền mặt/chuyển khoản/thẻ)*/
+        PAID_FAILED; /*Giao dịch thanh toán thất bại (thẻ/ví điện tử)*/
 
         @Composable
         fun getColor() = when (this) {
-            PENDING -> MaterialTheme.colorScheme.tertiary
-            CONFIRMED -> MaterialTheme.colorScheme.primary
+            NEW -> MaterialTheme.colorScheme.tertiary
+            PENDING -> MaterialTheme.colorScheme.primary
+            CANCELED -> MaterialTheme.colorScheme.error
             PROCESSING -> MaterialTheme.colorScheme.secondary
-            IN_PROGRESS -> MaterialTheme.colorScheme.inversePrimary
-            READY_FOR_DELIVERY -> MaterialTheme.colorScheme.surfaceTint
-            COMPLETED -> MaterialTheme.colorScheme.surfaceTint.copy(green = 0.8f)
-            CANCELLED -> MaterialTheme.colorScheme.error
+            COMPLETED -> MaterialTheme.colorScheme.inversePrimary
+            DELIVERED -> MaterialTheme.colorScheme.surfaceTint
+            PAID -> MaterialTheme.colorScheme.surfaceTint.copy(green = 0.8f)
+            PAID_FAILED -> MaterialTheme.colorScheme.error.copy(alpha = 0.6f)
         }
     }
-
-
 }
 
 @Serializable

@@ -73,7 +73,7 @@ class StaffViewModel @Inject constructor(
                     val newOrderState = (_orderState.value as? OrderState.Success)
                         ?.orders?.mapNotNull {
                             if (it.id == orderId) {
-                                if (status == Order.Status.CANCELLED || status == Order.Status.COMPLETED)
+                                if (status == Order.Status.CANCELED || status == Order.Status.COMPLETED)
                                     null
                                 else
                                     it.copy(status = status)
