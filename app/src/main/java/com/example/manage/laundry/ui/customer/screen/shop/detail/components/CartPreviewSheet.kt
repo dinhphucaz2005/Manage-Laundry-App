@@ -31,10 +31,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.manage.laundry.data.model.response.CreateOrderResponse
+import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.customer.CustomerState
 import com.example.manage.laundry.ui.customer.CustomerViewModel
+import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
+
+@Preview
+@Composable
+private fun CartPreviewSheetPreview() {
+    ManageLaundryAppTheme {
+        CartPreviewSheet(
+            viewModel = fakeViewModel<CustomerViewModel>(),
+            onDismiss = {},
+            onCheckout = {},
+            onClearCart = {}
+        )
+    }
+}
 
 @Composable
 fun CartPreviewSheet(
@@ -165,7 +181,8 @@ fun CartPreviewSheet(
 
                         item {
                             if (cartItems.isNotEmpty()) {
-                                val specialInstructions = cartItems.firstOrNull()?.specialInstructions
+                                val specialInstructions =
+                                    cartItems.firstOrNull()?.specialInstructions
                                 if (!specialInstructions.isNullOrBlank()) {
                                     Column(modifier = Modifier.padding(vertical = 8.dp)) {
                                         Text(
@@ -299,7 +316,7 @@ fun OrderSuccessView(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Tổng tiền:",
+                        text = "Tạm tính:",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

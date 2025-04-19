@@ -151,7 +151,29 @@ private val customerRepository = object : CustomerRepository {
     }
 
     override suspend fun getShopDetails(shopId: Int): ApiResponse<ShopDetailResponse> {
-        return ApiResponse()
+        return ApiResponse(
+            data = ShopDetailResponse(
+                1,
+                "Tiệm Giặt ABC",
+                "123 Lý Thường Kiệt",
+                "Giặt sấy nhanh",
+                "08:00",
+                services = listOf(
+                    ShopDetailResponse.ShopDetailServiceResponse(
+                        1,
+                        "Giặt sấy",
+                        "Giặt và sấy quần áo",
+                        50000.0,
+                    ),
+                    ShopDetailResponse.ShopDetailServiceResponse(
+                        2,
+                        "Giặt ủi",
+                        "Giặt và ủi quần áo",
+                        70000.0,
+                    )
+                ),
+            )
+        )
     }
 }
 

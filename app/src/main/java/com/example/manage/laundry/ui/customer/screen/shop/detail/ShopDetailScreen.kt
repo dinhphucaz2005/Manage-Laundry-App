@@ -38,17 +38,31 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.manage.laundry.LocalSnackbarHostState
 import com.example.manage.laundry.data.model.request.CreateOrderRequest
 import com.example.manage.laundry.data.model.response.ShopDetailResponse
+import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.customer.CustomerState
 import com.example.manage.laundry.ui.customer.CustomerViewModel
 import com.example.manage.laundry.ui.customer.screen.shop.detail.components.CartPreviewSheet
 import com.example.manage.laundry.ui.customer.screen.shop.detail.components.OrderBottomSheet
 import com.example.manage.laundry.ui.customer.screen.shop.detail.components.ServiceCardWithOrder
 import com.example.manage.laundry.ui.customer.screen.shop.detail.components.ShopInfoSection
+import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import kotlinx.coroutines.launch
+
+@Preview
+@Composable
+private fun ShopDetailScreenPreview() {
+    ManageLaundryAppTheme {
+        ShopDetailScreen(
+            viewModel = fakeViewModel<CustomerViewModel>(),
+            shopId = 1,
+        ) { }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

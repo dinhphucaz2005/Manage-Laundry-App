@@ -53,16 +53,16 @@ android {
         debug {
             buildConfigField("String", "IP_ADDRESS", "\"$networkIp\"")
             // Shop Owner
-            buildConfigField("String", "DUMMY_SHOP_OWNER_EMAIL", "\"nguyenvana@example.com\"")
-            buildConfigField("String", "DUMMY_SHOP_OWNER_PASSWORD", "\"Matkhau123\"")
+            buildConfigField("String", "DUMMY_SHOP_OWNER_EMAIL", "\"owner1@laundry.com\"")
+            buildConfigField("String", "DUMMY_SHOP_OWNER_PASSWORD", "\"test\"")
 
             // Staff
-            buildConfigField("String", "DUMMY_STAFF_EMAIL", "\"staff1@example.com\"")
-            buildConfigField("String", "DUMMY_STAFF_PASSWORD", "\"password123\"")
+            buildConfigField("String", "DUMMY_STAFF_EMAIL", "\"staff1@laundry.com\"")
+            buildConfigField("String", "DUMMY_STAFF_PASSWORD", "\"test\"")
 
             // Customer
-            buildConfigField("String", "DUMMY_CUSTOMER_EMAIL", "\"customer@example.com\"")
-            buildConfigField("String", "DUMMY_CUSTOMER_PASSWORD", "\"123456\"")
+            buildConfigField("String", "DUMMY_CUSTOMER_EMAIL", "\"customer1@example.com\"")
+            buildConfigField("String", "DUMMY_CUSTOMER_PASSWORD", "\"test\"")
         }
 
         release {
