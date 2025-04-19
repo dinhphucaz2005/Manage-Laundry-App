@@ -23,21 +23,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.manage.laundry.LocalSnackbarHostState
+import com.example.manage.laundry.data.model.request.Order
+import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.customer.CustomerState
 import com.example.manage.laundry.ui.customer.CustomerViewModel
+import com.example.manage.laundry.ui.customer.screen.order.components.ConfirmOrderDialog
 import com.example.manage.laundry.ui.customer.screen.order.components.EmptyOrdersView
 import com.example.manage.laundry.ui.customer.screen.order.components.OrdersList
 import com.example.manage.laundry.ui.customer.screen.order.components.TrackOrderDialog
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
+import kotlinx.coroutines.launch
 
 @Preview
 @Composable
@@ -56,7 +61,70 @@ fun CustomerOrderScreen(
 ) {
     val orderHistoryState by customerViewModel.orderHistoryState.collectAsState()
     var showTrackOrderDialog by remember { mutableStateOf(false) }
-    var selectedOrderId by remember { mutableIntStateOf(-1) }
+    var selectedOrder by remember { mutableStateOf<OrderResponse?>(null) }
+    val snackbarHostState = LocalSnackbarHostState.current
+    val coroutineScope = rememberCoroutineScope()
+
+    val confirmOrderState by customerViewModel.confirmOrderState.collectAsState()
+    val cancelOrderState by customerViewModel.cancelOrderState.collectAsState()
+
+    LaunchedEffect(confirmOrderState) {
+        coroutineScope.launch {
+            when(confirmOrderState) {
+                is CustomerState.ConfirmOrder.Error -> {
+                    val errorMessage = (confirmOrderState as CustomerState.ConfirmOrder.Error).message
+                    snackbarHostState.showSnackbar(
+                        message = "Xác nhận đơn hàng thất bại: $errorMessage",
+                        actionLabel = "Đóng"
+                    )
+                }
+                CustomerState.ConfirmOrder.Idle -> {}
+                CustomerState.ConfirmOrder.Loading -> {
+                    snackbarHostState.showSnackbar(
+                        message = "Đang xác nhận đơn hàng...",
+                        actionLabel = null
+                    )
+                }
+                is CustomerState.ConfirmOrder.Success -> {
+                    val successMessage = (confirmOrderState as CustomerState.ConfirmOrder.Success).message
+                    snackbarHostState.showSnackbar(
+                        message = "Xác nhận đơn hàng thành công: $successMessage",
+                        actionLabel = "Đóng"
+                    )
+                    customerViewModel.getOrderHistory()
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(cancelOrderState) {
+        coroutineScope.launch {
+            when(cancelOrderState) {
+                is CustomerState.CancelOrder.Error -> {
+                    val errorMessage = (cancelOrderState as CustomerState.CancelOrder.Error).message
+                    snackbarHostState.showSnackbar(
+                        message = "Hủy đơn hàng thất bại: $errorMessage",
+                        actionLabel = "Đóng"
+                    )
+                }
+                CustomerState.CancelOrder.Idle -> {}
+                CustomerState.CancelOrder.Loading -> {
+                    snackbarHostState.showSnackbar(
+                        message = "Đang hủy đơn hàng...",
+                        actionLabel = null
+                    )
+                }
+                is CustomerState.CancelOrder.Success -> {
+                    val successMessage = (cancelOrderState as CustomerState.CancelOrder.Success).message
+                    snackbarHostState.showSnackbar(
+                        message = "Hủy đơn hàng thành công: $successMessage",
+                        actionLabel = "Đóng"
+                    )
+                    customerViewModel.getOrderHistory()
+                }
+            }
+        }
+    }
 
     LaunchedEffect(key1 = Unit) {
         customerViewModel.getOrderHistory()
@@ -106,8 +174,8 @@ fun CustomerOrderScreen(
                         } else {
                             OrdersList(
                                 orders = orders,
-                                onOrderClick = { orderId ->
-                                    selectedOrderId = orderId
+                                onOrderClick = { order ->
+                                    selectedOrder = order
                                     showTrackOrderDialog = true
                                 }
                             )
@@ -143,11 +211,29 @@ fun CustomerOrderScreen(
     }
 
     // Track Order Dialog
+
     if (showTrackOrderDialog) {
-        TrackOrderDialog(
-            viewModel = customerViewModel,
-            orderId = selectedOrderId,
-            onDismiss = { showTrackOrderDialog = false }
-        )
+        selectedOrder?.let { order ->
+            if (order.status == Order.Status.PENDING)
+                ConfirmOrderDialog(
+                    order = order,
+                    onConfirm = {
+                        customerViewModel.confirmOrder(order.id)
+                        showTrackOrderDialog = false
+                    },
+                    onCancel = {
+                        customerViewModel.cancelOrder(order.id)
+                        showTrackOrderDialog = false
+                    },
+                    onDismiss = { showTrackOrderDialog = false }
+                )
+            else
+                TrackOrderDialog(
+                    viewModel = customerViewModel,
+                    orderId = order.id,
+                    onDismiss = { showTrackOrderDialog = false }
+                )
+        }
     }
 }
+

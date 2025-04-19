@@ -73,15 +73,7 @@ fun TrackingStepsView(status: String) {
         mainSteps.forEachIndexed { index, step ->
             Column {
                 StepIndicator(
-                    label = when (step) {
-                        Order.Status.NEW -> "Mới"
-                        Order.Status.PENDING -> "Chờ xử lý"
-                        Order.Status.PROCESSING -> "Đang xử lý"
-                        Order.Status.COMPLETED -> "Hoàn thành"
-                        Order.Status.DELIVERED -> "Đã giao"
-                        Order.Status.PAID -> "Đã thanh toán"
-                        else -> step.name
-                    },
+                    label = step.getStringTrackingStepsView(),
                     isCompleted = if (isErrorState) {
                         index < currentStepIndex
                     } else {

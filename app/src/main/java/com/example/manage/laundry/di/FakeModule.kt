@@ -34,12 +34,14 @@ import com.example.manage.laundry.data.model.response.ShopSearchResponse
 import com.example.manage.laundry.data.model.response.ShopServiceResponse
 import com.example.manage.laundry.data.model.response.StaffLoginResponse
 import com.example.manage.laundry.data.model.response.UserResponse
+import com.example.manage.laundry.data.network.ApiService
 import com.example.manage.laundry.di.repository.CustomerRepository
 import com.example.manage.laundry.di.repository.ShopOwnerRepository
 import com.example.manage.laundry.di.repository.StaffRepository
 import com.example.manage.laundry.ui.customer.CustomerViewModel
 import com.example.manage.laundry.ui.staff.StaffViewModel
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
+import io.ktor.client.HttpClient
 import java.time.LocalDate
 
 private val customerRepository = object : CustomerRepository {
@@ -132,7 +134,7 @@ private val customerRepository = object : CustomerRepository {
             data =
                 CreateOrderResponse(
                     orderId = 1,
-                    totalPrice = 5,
+                    estimatePrice = 5,
                     status = "sdlk",
                     createdAt = "L",
                 )
@@ -388,11 +390,22 @@ private fun String.Companion.now(): String =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) LocalDate.now().toString() else "2025-03-07"
 
 
-fun provideFakeCustomerViewModel() = CustomerViewModel(customerRepository)
+fun provideFakeCustomerViewModel() = CustomerViewModel(
+    repository = customerRepository,
+    apiService = ApiService(
+        client = HttpClient(),
+        baseUrl = ""
+    )
+)
 
 fun provideFakeShopOwnerViewModel() = ShopOwnerViewModel(shopOwnerRepository)
 
-fun provideFakeStaffViewModel() = StaffViewModel(staffRepository)
+fun provideFakeStaffViewModel() = StaffViewModel(
+    staffRepository = staffRepository, apiService = ApiService(
+        client = HttpClient(),
+        baseUrl = ""
+    )
+)
 
 
 @Composable

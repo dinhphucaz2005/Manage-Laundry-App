@@ -12,6 +12,7 @@ import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
 import com.example.manage.laundry.data.model.response.ShopDetailResponse
 import com.example.manage.laundry.data.model.response.ShopSearchResponse
+import com.example.manage.laundry.data.network.ApiService
 import com.example.manage.laundry.di.repository.CustomerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CustomerViewModel @Inject constructor(
-    private val repository: CustomerRepository
+    private val repository: CustomerRepository,
+    private val apiService: ApiService,
 ) : ViewModel() {
 
     private val _loginState = MutableStateFlow<CustomerState.Login>(CustomerState.Login.Idle)
@@ -47,6 +49,14 @@ class CustomerViewModel @Inject constructor(
     private val _orderHistoryState =
         MutableStateFlow<CustomerState.OrderHistory>(CustomerState.OrderHistory.Idle)
     val orderHistoryState: StateFlow<CustomerState.OrderHistory> = _orderHistoryState
+
+    private val _confirmOrderState =
+        MutableStateFlow<CustomerState.ConfirmOrder>(CustomerState.ConfirmOrder.Idle)
+    val confirmOrderState: StateFlow<CustomerState.ConfirmOrder> = _confirmOrderState
+
+    private val _cancelOrderState =
+        MutableStateFlow<CustomerState.CancelOrder>(CustomerState.CancelOrder.Idle)
+    val cancelOrderState: StateFlow<CustomerState.CancelOrder> = _cancelOrderState
 
     private val _trackOrderState =
         MutableStateFlow<CustomerState.TrackOrder>(CustomerState.TrackOrder.Idle)
@@ -252,6 +262,49 @@ class CustomerViewModel @Inject constructor(
         }
     }
 
+    fun confirmOrder(orderId: Int) {
+        viewModelScope.launch {
+            _confirmOrderState.value = CustomerState.ConfirmOrder.Loading
+            try {
+
+                apiService.customerConfirmOrder(
+                    orderId = orderId,
+                ).let { response ->
+                    if (response.success)
+                        _confirmOrderState.value =
+                            CustomerState.ConfirmOrder.Success(response.message)
+                    else
+                        _confirmOrderState.value =
+                            CustomerState.ConfirmOrder.Error(response.message)
+                }
+            } catch (e: Exception) {
+                _confirmOrderState.value =
+                    CustomerState.ConfirmOrder.Error(e.message ?: "Lỗi không xác định")
+            }
+        }
+    }
+
+    fun cancelOrder(orderId: Int) {
+        viewModelScope.launch {
+            _cancelOrderState.value = CustomerState.CancelOrder.Loading
+            try {
+                apiService.customerCancelOrder(
+                    orderId = orderId,
+                ).let { response ->
+                    if (response.success)
+                        _cancelOrderState.value =
+                            CustomerState.CancelOrder.Success(response.message)
+                    else
+                        _cancelOrderState.value =
+                            CustomerState.CancelOrder.Error(response.message)
+                }
+            } catch (e: Exception) {
+                _cancelOrderState.value =
+                    CustomerState.CancelOrder.Error(e.message ?: "Lỗi không xác định")
+            }
+        }
+    }
+
 }
 
 sealed class CustomerState {
@@ -305,4 +358,19 @@ sealed class CustomerState {
         data class Success(val order: OrderResponse) : TrackOrder()
         data class Error(val message: String) : TrackOrder()
     }
+
+    sealed class ConfirmOrder : CustomerState() {
+        data object Idle : ConfirmOrder()
+        data object Loading : ConfirmOrder()
+        data class Success(val message: String) : ConfirmOrder()
+        data class Error(val message: String) : ConfirmOrder()
+    }
+
+    sealed class CancelOrder : CustomerState() {
+        data object Idle : CancelOrder()
+        data object Loading : CancelOrder()
+        data class Success(val message: String) : CancelOrder()
+        data class Error(val message: String) : CancelOrder()
+    }
+
 }

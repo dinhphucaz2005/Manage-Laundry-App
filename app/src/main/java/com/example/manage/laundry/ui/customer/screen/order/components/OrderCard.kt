@@ -63,7 +63,7 @@ fun OrderCard(
                     fontWeight = FontWeight.Bold
                 )
 
-                StatusChip(status = order.status.getString())
+                StatusChip(status = order.status.getStringTrackingStepsView())
             }
 
             Spacer(modifier = Modifier.height(8.dp))

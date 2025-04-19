@@ -13,10 +13,14 @@ data class OrderResponse(
     private val totalPrice: Int? = null,
     val status: Order.Status = Order.Status.PENDING,
     val specialInstructions: String? = null,
+    val staffResponse: String? = null,
     private val createdAt: String? = null,
     private val updatedAt: String? = null,
     val items: List<OrderItemResponse> = emptyList()
 ) {
+
+    val estimatePriceInt: Int
+        get() = estimatePrice
 
     val estimatePriceString: String
         @SuppressLint("DefaultLocale")

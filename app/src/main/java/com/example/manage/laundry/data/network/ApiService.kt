@@ -1,10 +1,11 @@
 package com.example.manage.laundry.data.network
 
+import com.example.manage.laundry.data.model.request.CancelOrderRequest
+import com.example.manage.laundry.data.model.request.ConfirmOrderRequest
 import com.example.manage.laundry.data.model.request.CreateOrderRequest
 import com.example.manage.laundry.data.model.request.CreateServiceRequest
 import com.example.manage.laundry.data.model.request.CustomerLoginRequest
 import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
-import com.example.manage.laundry.data.model.request.Order
 import com.example.manage.laundry.data.model.request.OwnerLoginRequest
 import com.example.manage.laundry.data.model.request.ShopRegisterRequest
 import com.example.manage.laundry.data.model.request.StaffLoginRequest
@@ -126,6 +127,28 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
             setBody(request)
         }.body()
 
+    suspend fun confirmOrder(
+        orderId: Int,
+        newPrice: Int? = null,
+        staffResponse: String? = null,
+    ): ApiResponse<Nothing> =
+        client.put("$baseUrl/staff/orders/$orderId/confirm") {
+            contentType(ContentType.Application.Json)
+            addAuthorization()
+            setBody(ConfirmOrderRequest(newPrice, staffResponse))
+        }.body()
+
+    suspend fun cancelOrder(
+        orderId: Int,
+        staffResponse: String? = null,
+    ): ApiResponse<Nothing> =
+        client.put("$baseUrl/staff/orders/$orderId/cancel") {
+            contentType(ContentType.Application.Json)
+            addAuthorization()
+            setBody(staffResponse?.let { CancelOrderRequest(it) })
+        }.body()
+
+
     // Customer Endpoints (5)
     suspend fun registerCustomer(request: CustomerRegisterRequest): ApiResponse<RegisterCustomerResponse> =
         client.post("$baseUrl/customers/register") {
@@ -165,9 +188,20 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
     suspend fun getShopDetails(shopId: Int): ApiResponse<ShopDetailResponse> =
         client.get("$baseUrl/owners/shops/$shopId").body()
 
+    suspend fun customerConfirmOrder(orderId: Int): ApiResponse<Nothing> =
+        client.put("$baseUrl/customers/orders/$orderId/confirm") {
+            addAuthorization()
+        }.body()
+
+    suspend fun customerCancelOrder(orderId: Int): ApiResponse<Nothing> =
+        client.put("$baseUrl/customers/orders/$orderId/cancel") {
+            addAuthorization()
+        }.body()
+
 
     private fun HttpRequestBuilder.addAuthorization() {
         headers.append(HttpHeaders.Authorization, "Bearer $token")
     }
+
 
 }

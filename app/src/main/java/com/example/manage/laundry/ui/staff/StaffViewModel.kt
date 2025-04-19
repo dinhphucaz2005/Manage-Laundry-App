@@ -7,6 +7,7 @@ import com.example.manage.laundry.data.model.request.StaffLoginRequest
 import com.example.manage.laundry.data.model.request.UpdateOrderStatusRequest
 import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.data.model.response.StaffLoginResponse
+import com.example.manage.laundry.data.network.ApiService
 import com.example.manage.laundry.di.repository.StaffRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StaffViewModel @Inject constructor(
-    private val staffRepository: StaffRepository
+    private val staffRepository: StaffRepository,
+    private val apiService: ApiService,
 ) : ViewModel() {
 
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
@@ -81,9 +83,52 @@ class StaffViewModel @Inject constructor(
                                 it
                         } ?: emptyList()
                     _orderState.value = OrderState.Success(orders = newOrderState)
-                    _updateOrderState.value = UpdateOrderState.Success
+                    _updateOrderState.value = UpdateOrderState
+                        .Success(message = response.message, order = response.data)
                 } else {
                     _updateOrderState.value = UpdateOrderState.Error(response.message)
+                }
+            } catch (e: Exception) {
+                _updateOrderState.value = UpdateOrderState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun cancelOrder(orderId: Int, staffResponse: String? = null) {
+        viewModelScope.launch {
+            _updateOrderState.value = UpdateOrderState.Loading
+            try {
+                apiService.cancelOrder(
+                    orderId = orderId,
+                    staffResponse = staffResponse
+                ).let { response ->
+                    _updateOrderState.value = UpdateOrderState.Success(
+                        message = response.message,
+                        order = response.data
+                    )
+                }
+            } catch (e: Exception) {
+                _updateOrderState.value = UpdateOrderState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun confirmOrder(orderId: Int, staffResponse: String? = null, newPrice: Int?) {
+        viewModelScope.launch {
+            _updateOrderState.value = UpdateOrderState.Loading
+            try {
+                apiService.confirmOrder(
+                    orderId = orderId,
+                    newPrice = newPrice,
+                    staffResponse = staffResponse
+                ).let { response ->
+                    if (response.success)
+                        _updateOrderState.value = UpdateOrderState.Success(
+                            message = response.message,
+                            order = response.data
+                        )
+                    else
+                        _updateOrderState.value = UpdateOrderState.Error(response.message)
                 }
             } catch (e: Exception) {
                 _updateOrderState.value = UpdateOrderState.Error(e.message ?: "Unknown error")
@@ -108,7 +153,11 @@ class StaffViewModel @Inject constructor(
     sealed class UpdateOrderState {
         data object Idle : UpdateOrderState()
         data object Loading : UpdateOrderState()
-        data object Success : UpdateOrderState()
+        data class Success(
+            val order: OrderResponse? = null,
+            val message: String? = null
+        ) : UpdateOrderState()
+
         data class Error(val message: String) : UpdateOrderState()
     }
 }

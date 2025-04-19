@@ -321,7 +321,7 @@ fun OrderSuccessView(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = "${order.totalPrice}đ",
+                        text = "${order.estimatePrice}đ",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary

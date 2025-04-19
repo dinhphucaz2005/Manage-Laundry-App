@@ -14,7 +14,7 @@ import com.example.manage.laundry.data.model.response.OrderResponse
 @Composable
 fun OrdersList(
     orders: List<OrderResponse>,
-    onOrderClick: (Int) -> Unit
+    onOrderClick: (OrderResponse) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -22,7 +22,7 @@ fun OrdersList(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(orders) { order ->
-            OrderCard(order = order, onClick = { onOrderClick(order.id) })
+            OrderCard(order = order, onClick = { onOrderClick(order) })
         }
     }
 }

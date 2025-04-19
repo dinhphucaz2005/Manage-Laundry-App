@@ -30,9 +30,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.manage.laundry.LocalSnackbarHostState
+import com.example.manage.laundry.data.model.request.Order.Status.NEW
+import com.example.manage.laundry.data.model.request.Order.Status.PENDING
 import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.di.fakeViewModel
 import com.example.manage.laundry.ui.staff.StaffViewModel
+import com.example.manage.laundry.ui.staff.screen.home.components.NewOrderBottomSheet
 import com.example.manage.laundry.ui.staff.screen.home.components.OrderCard
 import com.example.manage.laundry.ui.staff.screen.home.components.OrderStatusBottomSheet
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
@@ -71,8 +74,17 @@ fun StaffHomeScreen(
                     snackbarHostState.showSnackbar(message)
                 }
 
-                else -> {
+                is StaffViewModel.UpdateOrderState.Success -> {
+                    (updateOrderState as StaffViewModel.UpdateOrderState.Success).message.let { message ->
+                        snackbarHostState.showSnackbar(message ?: "Order updated successfully")
+                        staffViewModel.getOrders()
+                    }
+                }
 
+                StaffViewModel.UpdateOrderState.Idle -> {}
+
+                StaffViewModel.UpdateOrderState.Loading -> {
+                    snackbarHostState.showSnackbar("Updating order...")
                 }
             }
         }
@@ -154,17 +166,57 @@ fun StaffHomeScreen(
     }
 
     if (showBottomSheet && selectedOrder != null) {
-        OrderStatusBottomSheet(
-            order = selectedOrder!!,
-            onDismiss = { showBottomSheet = false },
-            onStatusUpdate = { newStatus ->
-                staffViewModel.updateOrderStatus(selectedOrder!!.id, newStatus)
-                showBottomSheet = false
-            },
-            sheetState = sheetState
-        )
+        val order = selectedOrder!!
+
+        when (order.status) {
+            NEW -> {
+                NewOrderBottomSheet(
+                    order = order,
+                    sheetState = sheetState,
+                    onDismiss = { showBottomSheet = false },
+                    onVerifyPrice = { price, response ->
+                        staffViewModel.confirmOrder(
+                            orderId = order.id,
+                            newPrice = price,
+                            staffResponse = response
+                        )
+                        showBottomSheet = false
+                    },
+                    onCancel = {
+                        staffViewModel.cancelOrder(orderId = order.id, staffResponse = it)
+                        showBottomSheet = false
+                    }
+                )
+            }
+
+            PENDING -> {
+                OrderStatusBottomSheet(
+                    order = order,
+                    sheetState = sheetState,
+                    onDismiss = { showBottomSheet = false },
+                    onStatusUpdate = {
+                        showBottomSheet = false
+                        TODO()
+                    }
+                )
+            }
+
+            else -> {
+                OrderStatusBottomSheet(
+                    order = order,
+                    sheetState = sheetState,
+                    onDismiss = { showBottomSheet = false },
+                    onStatusUpdate = {
+                        showBottomSheet = false
+                        TODO()
+                    }
+                )
+            }
+        }
     }
 }
+
+
 
 
 
