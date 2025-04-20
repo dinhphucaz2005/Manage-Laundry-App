@@ -2,8 +2,8 @@ package com.example.manage.laundry.ui.staff.model
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.DeliveryDining
+import androidx.compose.material.icons.filled.Payment
 import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class StaffTab(
@@ -11,6 +11,9 @@ enum class StaffTab(
     val icon: ImageVector,
 ) {
     ORDER("Orders", Icons.AutoMirrored.Filled.List),
-    STATISTICS("Statistics", Icons.Default.BarChart),
-    ACCOUNT("Account", Icons.Default.Settings)
+
+    //    STATISTICS("Statistics", Icons.Default.BarChart),
+    DELIVERY("Delivery", Icons.Default.DeliveryDining),
+    PAYMENT("Payment", Icons.Default.Payment),
+//    ACCOUNT("Account", Icons.Default.Settings)
 }

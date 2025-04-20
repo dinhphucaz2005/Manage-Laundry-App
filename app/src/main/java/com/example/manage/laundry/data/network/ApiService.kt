@@ -6,6 +6,7 @@ import com.example.manage.laundry.data.model.request.CreateOrderRequest
 import com.example.manage.laundry.data.model.request.CreateServiceRequest
 import com.example.manage.laundry.data.model.request.CustomerLoginRequest
 import com.example.manage.laundry.data.model.request.CustomerRegisterRequest
+import com.example.manage.laundry.data.model.request.Order
 import com.example.manage.laundry.data.model.request.OwnerLoginRequest
 import com.example.manage.laundry.data.model.request.ShopRegisterRequest
 import com.example.manage.laundry.data.model.request.StaffLoginRequest
@@ -148,6 +149,15 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
             setBody(staffResponse?.let { CancelOrderRequest(it) })
         }.body()
 
+    suspend fun loadOrderByStatus(status: Order.Status): ApiResponse<List<OrderResponse>> =
+        client.get("$baseUrl/staff/orders/status/${status.name}") {
+            addAuthorization()
+        }.body()
+
+    suspend fun loadOrderForStaff(): ApiResponse<List<OrderResponse>> =
+        client.get("$baseUrl/staff/orders/for-staff") {
+            addAuthorization()
+        }.body()
 
     // Customer Endpoints (5)
     suspend fun registerCustomer(request: CustomerRegisterRequest): ApiResponse<RegisterCustomerResponse> =

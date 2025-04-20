@@ -23,10 +23,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.manage.laundry.LocalSnackbarHostState
 import com.example.manage.laundry.di.fakeViewModel
-import com.example.manage.laundry.ui.component.Placeholder
 import com.example.manage.laundry.ui.staff.StaffViewModel
 import com.example.manage.laundry.ui.staff.model.StaffTab
+import com.example.manage.laundry.ui.staff.screen.delivery.DeliveryScreen
+import com.example.manage.laundry.ui.staff.screen.delivery.DeliveryViewModel
 import com.example.manage.laundry.ui.staff.screen.home.StaffHomeScreen
+import com.example.manage.laundry.ui.staff.screen.payment.PaymentScreen
+import com.example.manage.laundry.ui.staff.screen.payment.PaymentViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import kotlinx.coroutines.launch
 
@@ -124,8 +127,15 @@ fun StaffScreen(
             ) { page: Int ->
                 when (page) {
                     0 -> StaffHomeScreen(staffViewModel = staffViewModel)
-                    1 -> Placeholder()
-                    2 -> Placeholder()
+                    1 -> DeliveryScreen(
+                        deliveryViewModel = fakeViewModel<DeliveryViewModel>(),
+                        staffViewModel = staffViewModel
+                    )
+
+                    2 -> PaymentScreen(
+                        paymentViewModel = fakeViewModel<PaymentViewModel>(),
+                        staffViewModel = staffViewModel
+                    )
                 }
             }
         }

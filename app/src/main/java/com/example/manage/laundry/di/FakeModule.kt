@@ -40,6 +40,7 @@ import com.example.manage.laundry.di.repository.ShopOwnerRepository
 import com.example.manage.laundry.di.repository.StaffRepository
 import com.example.manage.laundry.ui.customer.CustomerViewModel
 import com.example.manage.laundry.ui.staff.StaffViewModel
+import com.example.manage.laundry.ui.staff.screen.delivery.DeliveryViewModel
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import io.ktor.client.HttpClient
 import java.time.LocalDate
@@ -407,6 +408,13 @@ fun provideFakeStaffViewModel() = StaffViewModel(
     )
 )
 
+fun provideFakeDeliveryViewModel() = DeliveryViewModel(
+    apiService = ApiService(
+        client = HttpClient(),
+        baseUrl = ""
+    )
+)
+
 
 @Composable
 inline fun <reified T : ViewModel> fakeViewModel(): T {
@@ -416,6 +424,7 @@ inline fun <reified T : ViewModel> fakeViewModel(): T {
             CustomerViewModel::class -> provideFakeCustomerViewModel() as T
             ShopOwnerViewModel::class -> provideFakeShopOwnerViewModel() as T
             StaffViewModel::class -> provideFakeStaffViewModel() as T
+            DeliveryViewModel::class -> provideFakeDeliveryViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${T::class.simpleName}")
         }
     } else {

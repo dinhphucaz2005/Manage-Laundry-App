@@ -31,6 +31,12 @@ class StaffViewModel @Inject constructor(
     private val _updateOrderState = MutableStateFlow<UpdateOrderState>(UpdateOrderState.Idle)
     val updateOrderState: StateFlow<UpdateOrderState> = _updateOrderState.asStateFlow()
 
+    fun reset() {
+        _loginState.value = LoginState.Idle
+        _orderState.value = OrderState.Idle
+        _updateOrderState.value = UpdateOrderState.Idle
+    }
+
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
