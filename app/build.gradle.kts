@@ -53,7 +53,7 @@ android {
         debug {
             buildConfigField("String", "IP_ADDRESS", "\"$networkIp\"")
             // Shop Owner
-            buildConfigField("String", "DUMMY_SHOP_OWNER_EMAIL", "\"owner1@laundry.com\"")
+            buildConfigField("String", "DUMMY_SHOP_OWNER_EMAIL", "\"owner2@laundry.com\"")
             buildConfigField("String", "DUMMY_SHOP_OWNER_PASSWORD", "\"test\"")
 
             // Staff

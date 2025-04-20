@@ -1,5 +1,7 @@
 package com.example.manage.laundry.data.network
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.manage.laundry.data.model.request.CancelOrderRequest
 import com.example.manage.laundry.data.model.request.ConfirmOrderRequest
 import com.example.manage.laundry.data.model.request.CreateOrderRequest
@@ -23,11 +25,14 @@ import com.example.manage.laundry.data.model.response.OrderResponse
 import com.example.manage.laundry.data.model.response.RegisterCustomerResponse
 import com.example.manage.laundry.data.model.response.RegisterOwnerResponse
 import com.example.manage.laundry.data.model.response.RegisterStaffResponse
+import com.example.manage.laundry.data.model.response.ServicesStatistics
 import com.example.manage.laundry.data.model.response.ShopDetailResponse
 import com.example.manage.laundry.data.model.response.ShopOrderResponse
 import com.example.manage.laundry.data.model.response.ShopSearchResponse
 import com.example.manage.laundry.data.model.response.ShopServiceResponse
 import com.example.manage.laundry.data.model.response.StaffLoginResponse
+import com.example.manage.laundry.data.model.response.StatisticsInRangeResponse
+import com.example.manage.laundry.data.model.response.StatisticsResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
@@ -39,6 +44,8 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 class ApiService(private val client: HttpClient, private val baseUrl: String) {
@@ -50,6 +57,31 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
     suspend fun test(): ApiResponse<String> = client.get("$baseUrl/hello").body()
 
     // Shop Owner Endpoints (8)
+    suspend fun getServicesPopularity(): ApiResponse<ServicesStatistics> {
+        return client.get("$baseUrl/statistics/shop/services/popularity") {
+            addAuthorization()
+        }.body()
+    }
+
+    suspend fun getStatistics(): ApiResponse<StatisticsResponse> {
+        return client.get("$baseUrl/statistics/shop") {
+            addAuthorization()
+        }.body()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun getStatisticsInRange(
+        startTime: LocalDateTime,
+        endTime: LocalDateTime
+    ): ApiResponse<StatisticsInRangeResponse> {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val startTimeString = startTime.format(formatter)
+        val endTimeString = endTime.format(formatter)
+        return client.get("$baseUrl/statistics/shop/revenue?startDate=$startTimeString&endDate=$endTimeString") {
+            addAuthorization()
+        }.body()
+    }
+
     suspend fun registerOwner(request: ShopRegisterRequest): ApiResponse<RegisterOwnerResponse> =
         client.post("$baseUrl/owners/register") {
             contentType(ContentType.Application.Json)

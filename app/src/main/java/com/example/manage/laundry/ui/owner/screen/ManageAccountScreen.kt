@@ -17,11 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.manage.laundry.di.fakeViewModel
-import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
-import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import ir.ehsannarmani.compose_charts.LineChart
 import ir.ehsannarmani.compose_charts.PieChart
 import ir.ehsannarmani.compose_charts.models.AnimationMode
@@ -30,7 +26,7 @@ import ir.ehsannarmani.compose_charts.models.Line
 import ir.ehsannarmani.compose_charts.models.Pie
 
 @Composable
-fun ManageAccountScreen(viewModel: ShopOwnerViewModel = fakeViewModel<ShopOwnerViewModel>()) {
+fun ManageAccountScreen() {
     var data by remember {
         mutableStateOf(
             listOf(
@@ -88,12 +84,4 @@ fun ManageAccountScreen(viewModel: ShopOwnerViewModel = fakeViewModel<ShopOwnerV
 
     }
 
-}
-
-@Preview
-@Composable
-private fun ManageStatisticsScreenPreview() {
-    ManageLaundryAppTheme {
-        ManageStatisticsScreen()
-    }
 }

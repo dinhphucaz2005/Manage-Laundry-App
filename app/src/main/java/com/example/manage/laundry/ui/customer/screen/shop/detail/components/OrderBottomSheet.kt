@@ -41,8 +41,6 @@ fun OrderBottomSheet(
     onDismiss: () -> Unit
 ) {
 
-    val context = LocalContext.current
-
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -110,7 +108,7 @@ fun OrderBottomSheet(
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "Thành tiền: ${formatCurrency(context, service.price * quantity)}đ",
+                text = "Thành tiền: ${formatCurrency(service.price * quantity)}đ",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary

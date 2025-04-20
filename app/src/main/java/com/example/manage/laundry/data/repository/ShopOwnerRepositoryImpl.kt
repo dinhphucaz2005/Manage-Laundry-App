@@ -22,8 +22,13 @@ class ShopOwnerRepositoryImpl(private val apiService: ApiService) : ShopOwnerRep
     override suspend fun register(request: ShopRegisterRequest): ApiResponse<RegisterOwnerResponse> =
         apiService.registerOwner(request)
 
-    override suspend fun login(request: OwnerLoginRequest): ApiResponse<LoginResponse> =
-        apiService.loginOwner(request)
+    override suspend fun login(request: OwnerLoginRequest): ApiResponse<LoginResponse> {
+        val result = apiService.loginOwner(request)
+        if (result.success && result.data != null) {
+            ApiService.token = result.data.token
+        }
+        return result
+    }
 
     override suspend fun getStaffs(shopId: Int): ApiResponse<GetStaffsResponse> =
         apiService.getStaffs(shopId)

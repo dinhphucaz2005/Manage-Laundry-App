@@ -1,5 +1,8 @@
 package com.example.manage.laundry.ui.owner.screen
 
+import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -31,8 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.manage.laundry.LocalSnackbarHostState
 import com.example.manage.laundry.di.fakeViewModel
+import com.example.manage.laundry.ui.owner.screen.statistic.StatisticsScreen
+import com.example.manage.laundry.ui.owner.screen.statistic.StatisticsViewModel
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
 import kotlinx.coroutines.launch
@@ -48,6 +54,7 @@ enum class ShopOwnerTab(
     ACCOUNT("Tài khoản", Icons.Default.Settings)
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShopOwnerHomeScreen(
@@ -171,14 +178,15 @@ fun ShopOwnerHomeScreen(
                     0 -> ManageStaffScreen(viewModel)
                     1 -> ManageServiceScreen(viewModel)
                     2 -> ManageOrderScreen(viewModel)
-                    3 -> ManageStatisticsScreen()
-                    4 -> ManageAccountScreen(viewModel)
+                    3 -> StatisticsScreen(statisticsViewModel = hiltViewModel<StatisticsViewModel>())
+                    4 -> ManageAccountScreen()
                 }
             }
         }
     }
 }
 
+@SuppressLint("NewApi")
 @Preview
 @Composable
 private fun ShopOwnerScaffoldPreview() {

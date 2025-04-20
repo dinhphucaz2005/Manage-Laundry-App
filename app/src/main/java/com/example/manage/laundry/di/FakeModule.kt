@@ -39,6 +39,7 @@ import com.example.manage.laundry.di.repository.CustomerRepository
 import com.example.manage.laundry.di.repository.ShopOwnerRepository
 import com.example.manage.laundry.di.repository.StaffRepository
 import com.example.manage.laundry.ui.customer.CustomerViewModel
+import com.example.manage.laundry.ui.owner.screen.statistic.StatisticsViewModel
 import com.example.manage.laundry.ui.staff.StaffViewModel
 import com.example.manage.laundry.ui.staff.screen.delivery.DeliveryViewModel
 import com.example.manage.laundry.viewmodel.ShopOwnerViewModel
@@ -415,6 +416,12 @@ fun provideFakeDeliveryViewModel() = DeliveryViewModel(
     )
 )
 
+fun provideStatisticsViewModel() = StatisticsViewModel(
+    apiService = ApiService(
+        client = HttpClient(),
+        baseUrl = ""
+    )
+)
 
 @Composable
 inline fun <reified T : ViewModel> fakeViewModel(): T {
@@ -425,6 +432,7 @@ inline fun <reified T : ViewModel> fakeViewModel(): T {
             ShopOwnerViewModel::class -> provideFakeShopOwnerViewModel() as T
             StaffViewModel::class -> provideFakeStaffViewModel() as T
             DeliveryViewModel::class -> provideFakeDeliveryViewModel() as T
+            StatisticsViewModel::class -> provideStatisticsViewModel() as T
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${T::class.simpleName}")
         }
     } else {
