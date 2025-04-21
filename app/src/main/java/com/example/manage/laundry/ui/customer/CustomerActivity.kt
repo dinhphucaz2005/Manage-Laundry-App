@@ -1,5 +1,7 @@
 package com.example.manage.laundry.ui.customer
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,6 +25,7 @@ import androidx.navigation.navArgument
 import com.example.manage.laundry.BaseActivity
 import com.example.manage.laundry.LocalSnackbarHostState
 import com.example.manage.laundry.di.fakeViewModel
+import com.example.manage.laundry.service.AppNotificationService
 import com.example.manage.laundry.ui.customer.navigation.CustomerRoute
 import com.example.manage.laundry.ui.customer.screen.auth.CustomerLoginScreen
 import com.example.manage.laundry.ui.customer.screen.shop.detail.ShopDetailScreen
@@ -80,12 +83,13 @@ class CustomerActivity : BaseActivity() {
                             composable(route = CustomerRoute.LOGIN) {
                                 CustomerLoginScreen(
                                     viewModel = customerViewModel,
-                                    onLoginSuccess = {
+                                    onLoginSuccess = { customerId ->
                                         navController.navigate(CustomerRoute.HOME) {
                                             popUpTo(CustomerRoute.LOGIN) {
                                                 inclusive = true
                                             }
                                         }
+                                        startNotificationService(customerId)
                                     },
                                     onRegisterRequest = {}
                                 )
@@ -116,6 +120,19 @@ class CustomerActivity : BaseActivity() {
                 }
 
             }
+        }
+    }
+
+    private fun startNotificationService(customerId: Int) {
+        val intent = Intent(this, AppNotificationService::class.java).apply {
+            action = AppNotificationService.ACTION_START_SERVICE
+            putExtra(AppNotificationService.EXTRA_CUSTOMER_ID, customerId)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
         }
     }
 }

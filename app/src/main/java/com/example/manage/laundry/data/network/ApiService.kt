@@ -44,6 +44,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
+import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -239,6 +240,19 @@ class ApiService(private val client: HttpClient, private val baseUrl: String) {
         client.put("$baseUrl/customers/orders/$orderId/cancel") {
             addAuthorization()
         }.body()
+
+    @Serializable
+    data class Request(
+        val adminKey: String,
+        val message: String
+    )
+
+    suspend fun sendNotification(adminKey: String, message: String): ApiResponse<String> {
+        return client.post("$baseUrl/send-notification") {
+            contentType(ContentType.Application.Json)
+            setBody(Request(adminKey, message))
+        }.body()
+    }
 
 
     private fun HttpRequestBuilder.addAuthorization() {

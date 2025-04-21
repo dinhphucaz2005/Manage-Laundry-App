@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.jetbrains.kotlin.serialization)
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 //    id("kotlin-kapt")
 }
 
@@ -153,4 +154,8 @@ dependencies {
 
     //Chart
     implementation(libs.compose.charts)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.database.ktx)
 }

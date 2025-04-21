@@ -32,13 +32,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.manage.laundry.LocalSnackbarHostState
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun LoginSelectionScreen(
     onShopOwnerLoginRequest: () -> Unit,
     onStaffLoginRequest: () -> Unit,
     onCustomerLoginRequest: () -> Unit,
+    onSystemAdminLoginRequest: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -90,11 +90,7 @@ fun LoginSelectionScreen(
                 RoleSelectionCard(
                     title = "System Admin",
                     icon = Icons.Default.Settings,
-                    onClick = {
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar("System Admin role is not available yet")
-                        }
-                    },
+                    onClick = onSystemAdminLoginRequest,
                     backgroundColor = MaterialTheme.colorScheme.error
                 )
             }
@@ -151,7 +147,8 @@ private fun LoginSelectionScreenPreview() {
         LoginSelectionScreen(
             onShopOwnerLoginRequest = { TODO() },
             onStaffLoginRequest = { TODO() },
-            onCustomerLoginRequest = { TODO() }
+            onCustomerLoginRequest = { TODO() },
+            onSystemAdminLoginRequest = { TODO() }
         )
     }
 }

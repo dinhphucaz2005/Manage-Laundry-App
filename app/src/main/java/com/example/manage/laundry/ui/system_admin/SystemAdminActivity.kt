@@ -1,10 +1,14 @@
-package com.example.manage.laundry.ui.customer.screen.auth
+package com.example.manage.laundry.ui.system_admin
 
+import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,28 +17,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,41 +42,70 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.manage.laundry.BuildConfig
-import com.example.manage.laundry.di.fakeViewModel
-import com.example.manage.laundry.ui.customer.CustomerState
-import com.example.manage.laundry.ui.customer.CustomerViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.manage.laundry.data.network.ApiService
 import com.example.manage.laundry.ui.theme.ManageLaundryAppTheme
-import kotlinx.coroutines.delay
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@Composable
-fun CustomerLoginScreen(
-    viewModel: CustomerViewModel,
-    onLoginSuccess: (customerId: Int) -> Unit,
-    onRegisterRequest: () -> Unit
-) {
-    val loginState by viewModel.loginState.collectAsState()
-    var email by remember { mutableStateOf(BuildConfig.DUMMY_CUSTOMER_EMAIL) }
-    var password by remember { mutableStateOf(BuildConfig.DUMMY_CUSTOMER_PASSWORD) }
-    var isPasswordVisible by remember { mutableStateOf(false) }
-
-    LaunchedEffect(loginState) {
-        if (loginState is CustomerState.Login.Success) {
-            delay(2000)
-            onLoginSuccess((loginState as CustomerState.Login.Success).response.userId)
+@AndroidEntryPoint
+class SystemAdminActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            ManageLaundryAppTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    SystemAdminScreen(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+            }
         }
     }
+}
+
+@HiltViewModel
+class SystemAdminViewModel @Inject constructor(
+    private val apiService: ApiService
+) : ViewModel() {
+    fun sendNotification(adminKey: String, message: String) {
+        viewModelScope.launch {
+            try {
+
+                val result = apiService.sendNotification(adminKey, message)
+                println(result)
+
+            } catch (e: Exception) {
+                println("Error sending notification: ${e.message}")
+            }
+        }
+    }
+}
+
+
+@Composable
+fun SystemAdminScreen(
+    modifier: Modifier = Modifier,
+    systemAdminViewModel: SystemAdminViewModel = hiltViewModel<SystemAdminViewModel>()
+) {
+
+    var adminKey by remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("Hệ thống sẽ dừng trong 30 phút nữa để bảo trì") }
+    val context = LocalContext.current
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
@@ -113,12 +139,12 @@ fun CustomerLoginScreen(
 
             // Header
             Text(
-                text = "Đăng Nhập Khách Hàng",
+                text = "System Admin",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text = "Đăng nhập để đặt dịch vụ giặt sấy",
+                text = "Gửi thông báo đến khách hàng",
                 fontSize = 16.sp,
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -140,9 +166,9 @@ fun CustomerLoginScreen(
                 ) {
                     // Email
                     OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text("Email") },
+                        value = adminKey,
+                        onValueChange = { adminKey = it },
+                        label = { Text("Admin Key") },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Person,
@@ -164,9 +190,9 @@ fun CustomerLoginScreen(
 
                     // Password
                     OutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = { Text("Mật khẩu") },
+                        value = message,
+                        onValueChange = { message = it },
+                        label = { Text("Thông báo đến khách hàng") },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Lock,
@@ -174,39 +200,31 @@ fun CustomerLoginScreen(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         },
-                        trailingIcon = {
-                            IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                                Icon(
-                                    imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                    contentDescription = "Toggle password visibility",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = { viewModel.login(email, password) }
-                        ),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
                         )
                     )
 
-                    // Quên mật khẩu
-                    TextButton(onClick = { /* TODO: Handle forgot password */ }) {
-                        Text("Quên mật khẩu?", fontSize = 16.sp)
-                    }
 
-                    // Nút đăng nhập
+                    // Nút Gửi thông báo
                     Button(
-                        onClick = { viewModel.login(email, password) },
+                        onClick = {
+                            systemAdminViewModel.sendNotification(
+                                adminKey = adminKey,
+                                message = message
+                            )
+                            if (adminKey != "adminKey")
+                                Toast.makeText(context, "Vui lòng nhập đúng Admin Key", Toast.LENGTH_SHORT).show()
+                            else
+                            Toast.makeText(
+                                context,
+                                "Đã gửi thông báo đến khách hàng thành công",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
@@ -216,70 +234,12 @@ fun CustomerLoginScreen(
                             contentColor = Color.White
                         )
                     ) {
-                        Text("Đăng Nhập", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text("Gửi thông báo", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Trạng thái loading hoặc thông báo lỗi
-            when (loginState) {
-                CustomerState.Login.Idle -> {}
-                CustomerState.Login.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.size(40.dp))
-                }
-
-                is CustomerState.Login.Error -> {
-                    Text(
-                        text = "Lỗi: ${(loginState as CustomerState.Login.Error).message}",
-                        fontSize = 16.sp,
-                        color = Color.Red,
-                        modifier = Modifier
-                            .background(Color(0xFFFFE0E0), RoundedCornerShape(8.dp))
-                            .padding(8.dp)
-                    )
-                }
-
-                is CustomerState.Login.Success -> {
-                    Text(
-                        text = "Chào mừng, ${(loginState as CustomerState.Login.Success).response.name}!",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .background(Color(0xFFE0F7FA), RoundedCornerShape(8.dp))
-                            .padding(8.dp)
-                    )
-                }
-
-
-            }
-
-            Spacer(modifier = Modifier.height(18.dp))
-
-            // Chuyển sang màn hình đăng ký
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Chưa có tài khoản?", fontSize = 16.sp, color = Color.Gray)
-                TextButton(onClick = onRegisterRequest) {
-                    Text("Đăng ký ngay", fontSize = 16.sp)
-                }
-            }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun CustomerLoginScreenPreview() {
-    ManageLaundryAppTheme {
-        CustomerLoginScreen(
-            viewModel = fakeViewModel<CustomerViewModel>(),
-            onLoginSuccess = {},
-        ) {}
-    }
-}

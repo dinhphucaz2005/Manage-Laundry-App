@@ -62,10 +62,11 @@ private val customerRepository = object : CustomerRepository {
         return if (request.email == "test@gmail.com" && request.password == "test") {
             ApiResponse(
                 data = CustomerLoginResponse(
-                    "fake_token",
-                    "Nguyễn Văn A",
-                    request.email,
-                    "0987654321"
+                    token = "fake_token",
+                    name = "Nguyễn Văn A",
+                    email = request.email,
+                    phone = "0987654321",
+                    userId = 1
                 )
             )
 

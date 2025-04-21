@@ -14,6 +14,7 @@ fun LaundryAppNavigation(
     onNavigateCustomerActivity: () -> Unit,
     onNavigateShopOwnerActivity: () -> Unit,
     onNavigateStaffActivity: () -> Unit,
+    onNavigateSystemAdminActivity: () -> Unit,
 ) {
     val navController = rememberNavController()
 
@@ -27,7 +28,8 @@ fun LaundryAppNavigation(
             LoginSelectionScreen(
                 onShopOwnerLoginRequest = onNavigateShopOwnerActivity,
                 onStaffLoginRequest = onNavigateStaffActivity,
-                onCustomerLoginRequest = onNavigateCustomerActivity
+                onCustomerLoginRequest = onNavigateCustomerActivity,
+                onSystemAdminLoginRequest = onNavigateSystemAdminActivity
             )
         }
 
